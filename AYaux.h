@@ -13,6 +13,9 @@ uint64_t lcg_fwd(uint64_t seed,uint64_t jump); // eq to srand(seed)
 double lcg_sze(); // replaces randmax
 double boxmuller_knuth(double mean, double variance, uint64_t * carry);
 
+int ** AYimatrix(int M_, int N_);
+void free_AYimatrix(int ** m_);
+
 double ** AYdmatrix(int M_, int N_);
 void free_AYdmatrix(double ** m_);
 

@@ -118,6 +118,18 @@ double boxmuller_knuth(double mean, double variance, uint64_t * carry)
   return gauss;
 }
 
+int ** AYimatrix(int M_, int N_)
+{
+  int * M00 = (int*)malloc((size_t)(N_*M_)*sizeof(int)); // allocating space for all the values of each matrix
+  int ** M0 = (int**)malloc((size_t)(M_)*sizeof(int*)); // allocating space for all the pointers to each COLUMN
+
+  for (int i = 0; i < M_; i++) M0[i] = M00 + (i*N_);
+
+  return M0;
+}
+void free_AYimatrix(int ** in_) {free(in_[0]); free(in_);}
+
+
 double ** AYdmatrix(int M_, int N_)
 {
   double * M00 = (double*)malloc((size_t)(N_*M_)*sizeof(double)); // allocating space for all the values of each matrix
