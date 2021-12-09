@@ -1,0 +1,56 @@
+#include <sys/stat.h>
+#include <sstream>
+#include <string>
+#include <fstream>
+
+#include "AYlinalg.hh"
+
+extern "C"
+{
+  #include "AYaux.h"
+}
+
+void preliminary_test1()
+{
+  int W=5;
+  int M=4;
+  int N=3;
+  AYtens T1(W, M, N); T1.init_123();
+  AYtens T2(W, M, N); T2.init_mats123();
+  AYmat M1(M, N); M1.init_123();
+
+  printf("T1\n");
+  T1.print_tens();
+
+  printf("T2\n");
+  T2.print_tens();
+
+  printf("M1\n");
+  M1.print_mat();
+
+  char name1[50]; name_gen(name1, 50, "./dat_dir/tens1");
+  char name2[50]; name_gen(name2, 50, "./dat_dir/mat1");
+  M1.fprintf_mat(name2);
+  T1.fprintf_tens(name1);
+}
+
+void preliminary_test2()
+{
+  char name1_back[50]; name_gen(name1_back, 50, "./dat_dir/tens1_back");
+  char name2_back[50]; name_gen(name2_back, 50, "./dat_dir/mat1_back");
+
+  printf("T1 back\n");
+  AYtens * T1_back = aysml_read_tens(name1_back);
+  T1_back->print_tens();
+  printf("M1 back\n");
+  AYmat * M1_back = aysml_read(name2_back);
+  M1_back->print_mat();
+}
+
+int main()
+{
+  preliminary_test1();
+  preliminary_test2();
+
+  return 0;
+}
