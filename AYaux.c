@@ -15,26 +15,6 @@ void aysml_gen(char name[], int m, int n)
   fclose(aysml_file);
 }
 
-// void fprintf_matrix(double ** matrix, int M, int N, char name[])
-// {
-//   int i, j;
-//   char specfile[200];
-//   memset(specfile, 0, 199);
-//   snprintf(specfile, 200, "%s.aydat", name);
-//   FILE * data_file = fopen(specfile, "wb");
-//
-//   for ( i = 0; i < M; i++)
-//   {
-//     for ( j = 0; j < N; j++)
-//     {
-//       fwrite(&((*matrix)[i*N + j]), sizeof(double), 1, data_file);
-//     }
-//   }
-//   fclose(data_file);
-//
-//   aysml_gen( name, M, N);
-// }
-
 void name_gen(char ptr[], int length, const char * name)
 {
   memset(ptr, 0, length-1);

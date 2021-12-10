@@ -41,19 +41,50 @@ AYsym::AYsym(int N_): N(N_)
   double Np1 = Nd + 1.0;
   double Nd2 = Nd/2.0;
 
-  int len = (int) (Np1*Nd2); // Baby Gauss theorem
+  len = (int) (Np1*Nd2); // Baby Gauss theorem
 
-  A = (double**)malloc((size_t)(N)*sizeof(double*));
-  *A = (double*)malloc((size_t)(len)*sizeof(double));
-  int j = N;
-  for (int i = 1; i < N; i++) {A[i] = A[i-1] + j; j--;}
+  double *row00 = (double*)malloc((size_t)(len)*sizeof(double));
+  A =(double**)malloc((size_t)(N)*sizeof(double*));
+  int k = N;
+  A[0] = row00;
+  for (int i = 1; i < N; i++, k--) A[i] = A[i-1] + k;
 }
 
 AYsym::~AYsym()
 {
-  for (int i = 0; i < N; i++) free(A[i]);
+  free(A[0]);
   free(A);
 }
+
+
+void AYsym::init_eye()
+{
+  for (int i = 0; i < N; i++)
+  {
+    A[i][0] = 1.0;
+    for (int j = 1; j < (N-i); j++) A[i][j] = 0.0;
+  }
+}
+
+void AYsym::print_mat(bool space_)
+{
+  for (int i = 0; i < N; i++)
+  {
+    for (int j = 0; j < i; j++)
+    {
+      printf("%f ", A[j][i-j]);
+    }
+    for (int j = i; j < N; j++)
+    {
+      printf("%f ", A[i][j-i]);
+    }
+    printf("\n");
+  }
+  if (space_) printf("\n");
+}
+
+void AYsym::init_123()
+{for (int i = 0; i < len; i++) A[0][i] = (double) (i+1);}
 
 void AYsym::mult_vec(AYvec * in_, AYvec * out_) // specialized for vector multiplication. Adds on top of output vector to keep it quick and simple
 {
@@ -64,9 +95,8 @@ void AYsym::mult_vec(AYvec * in_, AYvec * out_) // specialized for vector multip
       out_->A_ptr[i] += A[i][0]*in_->A_ptr[i]; // diagonal element
       for (int j = 1; j < (N - i); j++)
       {
-        double val = A[i][j]*in_->A_ptr[i];
-        out_->A_ptr[i] += val;
-        out_->A_ptr[j] += val;
+        out_->A_ptr[i] += A[i][j]*in_->A_ptr[i+j];
+        out_->A_ptr[i+j] += A[i][j]*in_->A_ptr[i];
       }
     }
   }

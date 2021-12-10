@@ -3,25 +3,25 @@ CC=gcc-11
 OS=OSX
 CFLAGS= -O3 -I. -fopenmp -DGSL -DKNUTH
 
-LDIR= -I/usr/local/include/
+IDIR= -I/usr/local/include/
 LINK= -L/usr/local/lib/ -lm -lgsl -lgslcblas -lfftw3 -lblas
 
 CDEPS = AYaux.h
 
 CPPDEPS = AYlinalg.hh
 
-OBJS1=main1.o AYaux.o AYlinalg.o AYmat.o AYvec.o AYrng.o AYtens.o
+OBJS1= AYaux.o AYlinalg.o AYmat.o AYvec.o AYrng.o AYtens.o
 
-%.o: %.c $(CDEPS)
-	$(CC) -c -o $@ $< $(CFLAGS) $(LDIR)
+%.o:%.c
+	$(CC) $(CFLAGS) $(IDIR) -c $<
 
-%.o: %.cc $(CPPDEPS)
-	$(CXX) -c -o $@ $< $(CFLAGS) $(LDIR)
+%.o:%.cc
+	$(CXX) $(CFLAGS) $(IDIR) -c $<
 
 all: test1
 
-test1: $(OBJS1)
-	$(CXX) -o $@ $^ $(CFLAGS) $(LINK)
+test1: main1.cc $(OBJS1)
+	$(CXX) $(CFLAGS) $(IDIR) -o $@ $^ $(LINK)
 
 clean:
 	rm -f test1

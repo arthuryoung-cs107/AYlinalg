@@ -4,7 +4,6 @@
 #include <stdint.h>
 
 void aysml_gen(char name[], int m, int n);
-// void fprintf_matrix(double ** matrix, int M, int N, char prefix[]);
 void name_gen(char ptr[], int length, const char * name);
 
 double knuth_random_uni(double low, double high, uint64_t * carry);

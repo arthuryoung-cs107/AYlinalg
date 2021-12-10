@@ -212,13 +212,16 @@ class AYtens
 class AYsym
 {
   public:
-    int N;
+    int N, len;
 
     double ** A;
 
     AYsym(int N_);
     ~AYsym();
 
+    void print_mat(bool space_ = true);
+    void init_eye();
+    void init_123();
     void mult_vec(AYvec * in_, AYvec * out_);
 };
 

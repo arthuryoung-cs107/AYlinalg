@@ -47,10 +47,37 @@ void preliminary_test2()
   M1_back->print_mat();
 }
 
+void AYsym_test()
+{
+  int N = 4;
+  AYsym eye(N); eye.init_eye();
+  AYsym sym2(N); sym2.init_123();
+  AYvec v1(N); v1.init_123();
+  AYvec v2(N); v2.init_0();
+  AYvec v3(N); v3.init_0();
+
+  printf("v1\n");
+  v1.print_vec();
+  printf("v2\n");
+  v2.print_vec();
+
+  printf("sym2\n");
+  sym2.print_mat();
+
+  eye.mult_vec(&v1, &v2);
+  printf("v2\n");
+  v2.print_vec();
+
+  sym2.mult_vec(&v1, &v3);
+  printf("v3\n");
+  v3.print_vec();
+
+}
+
 int main()
 {
-  preliminary_test1();
-  preliminary_test2();
-
+  // preliminary_test1();
+  // preliminary_test2();
+  AYsym_test();
   return 0;
 }
