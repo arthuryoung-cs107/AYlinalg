@@ -123,7 +123,7 @@ class AYmat
       friend class DCT_mapping;
       friend class AY_SVDspace;
       friend class AYtens;
-      friend class AYsym; 
+      friend class AYsym;
 
     private:
       void max_mag_elements_recursive(AYmat *top_vec_, int * index_array_, int i_next);
@@ -175,7 +175,26 @@ class AY_SVDspace // for now, assuming that we are working with a long thin matr
       void unpack(AYmat * U_, AYmat * S_, AYmat * V_);
 };
 
-void AYlinalg_svd(AYmat * mat_, AY_SVDspace * space_);
+class AY_Choleskyspace
+{
+    public:
+      AY_Choleskyspace(AYsym * mat_);
+      AY_Choleskyspace(int N_);
+      ~AY_SVDspace();
+
+      gsl_matrix * mat_gsl;
+      gsl_vector * x_gsl;
+
+      bool workspace_alloc = false;
+
+      int N_in;
+      void load_mat(AYsym * mat_);
+      void load_mat(AYsym * mat_, double scal_);
+      void Cholesky_decomp();
+      void alloc_workspace();
+      void solve_system(AYvec* x_in, AYvec * b_in);
+      void solve_system(AYvec* x_in);
+};
 
 class AYcolstack : public AYmat
 {
@@ -243,6 +262,8 @@ class AYdata
   void write_split_tensor(AYmat * mat_);
   void end_write_split_tensor(char prefix_[]);
 };
+
+void AYlinalg_svd(AYmat * mat_, AY_SVDspace * space_);
 
 AYmat * aysml_read(char name[]);
 AYvec * aysml_read_vec(char name[]);

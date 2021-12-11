@@ -112,7 +112,7 @@ void AYmat::GSL_2_AYmat_copy(gsl_vector * vec_in)
 {
   if ((vec_in->size == M) && (N == 1))
   {
-    for (int i = 0; i < M; i++) AT[0][i] = gsl_vector_get(vec_in, i);
+    for (int i = 0; i < M; i++) A_ptr[i] = gsl_vector_get(vec_in, i);
   }
   else printf("GSL_2_AYmat_copy (gslvec) failed: dimension mismatch\n");
 }
@@ -131,7 +131,7 @@ void AYmat::AYmat_2_GSL_copy(gsl_vector * vec_in)
 {
   if ((vec_in->size == M) && (N == 1))
   {
-    for (int i = 0; i < M; i++) gsl_vector_set(vec_in, i, AT[0][i]);
+    for (int i = 0; i < M; i++) gsl_vector_set(vec_in, i, A_ptr[i]);
   }
   else printf("AYmat_2_GSL_copy (gslvec) failed: dimension mismatch\n");
 }

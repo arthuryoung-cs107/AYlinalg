@@ -35,6 +35,63 @@ void AY_SVDspace::unpack(AYmat * U_, AYmat * S_, AYmat * V_)
   }
 }
 
+AY_Choleskyspace::AY_Choleskyspace(AYsym * mat_): N_in(mat_->N), mat_gsl(gsl_matrix_alloc(N_in, N_in))
+{load_mat(mat_);}
+
+AY_Choleskyspace::AY_Choleskyspace(int N_): N_in(N_), mat_gsl(gsl_matrix_alloc(N_in, N_in))
+{}
+
+AY_Choleskyspace::~AY_Choleskyspace()
+{
+  gsl_matrix_free(mat_gsl);
+  if (workspace_alloc)
+  {
+    gsl_vector_free(x_gsl);
+  }
+}
+
+AY_Choleskyspace::load_mat(AYsym * mat_)
+{
+  for (int i = 0; i < N; i++)
+  {
+    //lower diagonal components and diagonal only, exploiting gsl technique
+    for (int j = 0; j < i; j++) gsl_matrix_set(mat_gsl, i, j, A[j][i-j]);
+    //possibly redundant?
+    for (int j = i; j < N; j++) gsl_matrix_set(mat_gsl, i, j, A[i][j-i]);
+  }
+}
+AY_Choleskyspace::load_mat(AYsym * mat_, double scal_)
+{
+  for (int i = 0; i < N; i++)
+  {
+    //lower diagonal components and diagonal only, exploiting gsl technique
+    for (int j = 0; j < i; j++) gsl_matrix_set(mat_gsl, i, j, scal_*A[j][i-j]);
+    //possibly redundant?
+    for (int j = i; j < N; j++) gsl_matrix_set(mat_gsl, i, j, scal_*A[i][j-i]);
+  }
+}
+
+AY_Choleskyspace::Cholesky_decomp()
+{gsl_linalg_cholesky_decomp(m_gsl);}
+
+AY_Choleskyspace::alloc_workspace()
+{
+  workspace_alloc = true;
+  x_gsl = gsl_vector_alloc(N_in);
+}
+AY_Choleskyspace::solve_system(AYvec * x_in)
+{
+  gsl_linalg_cholesky_decomp(m_gsl);
+  gsl_linalg_cholesky_svx(m_gsl, x_gsl);
+  x_in->GSL_2_AYvec_copy(x_gsl);  
+}
+AY_Choleskyspace::solve_system(AYvec * x_in, AYvec * b_in)
+{
+  b_in->AYvec_2_GSL_copy(x_gsl);
+  gsl_linalg_cholesky_decomp(m_gsl);
+  gsl_linalg_cholesky_svx(m_gsl, x_gsl);
+  x_in->GSL_2_AYvec_copy(x_gsl);
+}
 AYsym::AYsym(int N_): N(N_)
 {
   double Nd = (double) N;
