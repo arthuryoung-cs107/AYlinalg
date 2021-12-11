@@ -86,6 +86,21 @@ void AYsym::print_mat(bool space_)
 void AYsym::init_123()
 {for (int i = 0; i < len; i++) A[0][i] = (double) (i+1);}
 
+void AYsym::init_sqrmat(AYmat * m_)
+{
+  for (int i = 0; i < N; i++)
+  {
+    for (int j = 0; j < (N - i); j++)
+    {
+      A[i][j] = 0.0; // this is being set. Adjust other dims
+      for (int k = 0; k < m_->M; k++)
+      {
+        A[i][j] += (m_->AT[i][k])*(m_->AT[j+i][k]);
+      }
+    }
+  }
+}
+
 void AYsym::mult_vec(AYvec * in_, AYvec * out_, bool diff_) // specialized for vector multiplication. Adds on top of output vector to keep it quick and simple
 {
   if ((in_->M==N)&&(out_->M==N))
@@ -133,7 +148,6 @@ double AYsym::vT_A_v(AYvec * v, AYvec * w)
       }
       out += (w->A_ptr[i])*(v->A_ptr[i]); // actively updating the inner product
     }
-
   }
   else printf("AYsym: vT_A_v error, dimensions are (%d %d)(%d %d) = (%d %d)\n", N, N, v->M, v->N, w->M, w->N);
   return out;

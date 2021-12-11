@@ -123,6 +123,7 @@ class AYmat
       friend class DCT_mapping;
       friend class AY_SVDspace;
       friend class AYtens;
+      friend class AYsym; 
 
     private:
       void max_mag_elements_recursive(AYmat *top_vec_, int * index_array_, int i_next);
@@ -219,9 +220,11 @@ class AYsym
     AYsym(int N_);
     ~AYsym();
 
+
     void print_mat(bool space_ = true);
     void init_eye();
     void init_123();
+    void init_sqrmat(AYmat * m_ );
     void mult_vec(AYvec * in_, AYvec * out_, bool diff_ = false);
     double vT_A_v(AYvec *v, AYvec * w);
 };

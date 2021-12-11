@@ -50,13 +50,16 @@ void preliminary_test2()
 void AYsym_test()
 {
   int N = 4;
+  int M = 5;
   AYsym eye(N); eye.init_eye();
   AYsym sym2(N); sym2.init_123();
+  AYsym sym3(N);
   AYvec v1(N); v1.init_123();
   AYvec v2(N); v2.init_0();
   AYvec v3(N); v3.init_123();
   AYvec v4(N); v4.init_123();
   AYvec v5(N); v5.init_0();
+  AYmat m1(M, N); m1.init_123();
 
   printf("v1\n");
   v1.print_vec();
@@ -81,6 +84,13 @@ void AYsym_test()
   printf("v^T A v = %f\n", sym2.vT_A_v(&v1, &v5));
   printf("v5\n");
   v5.print_vec();
+
+  printf("m1\n");
+  m1.print_mat();
+
+  sym3.init_sqrmat(&m1);
+  printf("sym3\n");
+  sym3.print_mat();
 
 
 }
