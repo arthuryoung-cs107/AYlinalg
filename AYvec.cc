@@ -69,13 +69,13 @@ AYmat * AYvec::transpose_gen()
 double AYvec::norm_2()
 {
   double out = 0.0;
-  for (int i = 0; i < M; i++) out += (A_ptr[i]*A_ptr[i])
-  return sqrt(out)
+  for (int i = 0; i < M; i++) out += (A_ptr[i]*A_ptr[i]);
+  return sqrt(out);
 }
 double AYvec::dot(AYmat *B_)
 {
   double out = 0.0;
-  if ((B_->M ==  M)%%(B_->N == 1))
+  if ((B_->M ==  M)&&(B_->N == 1))
   {
     for (int i = 0; i < M; i++) out += B_->A_ptr[i]*A_ptr[i];
   }

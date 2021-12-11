@@ -54,7 +54,9 @@ void AYsym_test()
   AYsym sym2(N); sym2.init_123();
   AYvec v1(N); v1.init_123();
   AYvec v2(N); v2.init_0();
-  AYvec v3(N); v3.init_0();
+  AYvec v3(N); v3.init_123();
+  AYvec v4(N); v4.init_123();
+  AYvec v5(N); v5.init_0();
 
   printf("v1\n");
   v1.print_vec();
@@ -71,6 +73,15 @@ void AYsym_test()
   sym2.mult_vec(&v1, &v3);
   printf("v3\n");
   v3.print_vec();
+
+  sym2.mult_vec(&v1, &v4, true);
+  printf("v4\n");
+  v4.print_vec();
+
+  printf("v^T A v = %f\n", sym2.vT_A_v(&v1, &v5));
+  printf("v5\n");
+  v5.print_vec();
+
 
 }
 

@@ -222,7 +222,8 @@ class AYsym
     void print_mat(bool space_ = true);
     void init_eye();
     void init_123();
-    void mult_vec(AYvec * in_, AYvec * out_);
+    void mult_vec(AYvec * in_, AYvec * out_, bool diff_ = false);
+    double vT_A_v(AYvec *v, AYvec * w);
 };
 
 class AYdata
