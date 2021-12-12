@@ -91,6 +91,9 @@ void AYsym_test()
   sym3.init_sqrmat(&m1);
   printf("sym3\n");
   sym3.print_mat();
+
+  char name3[50]; name_gen(name3, 50, "./dat_dir/sym3");
+  sym3.fprintf_sym(name3);
 }
 
 void Cholesky_test()
@@ -108,14 +111,13 @@ void Cholesky_test()
 
   space.solve_system(&x, &b);
   x.print_mat();
-
 }
 
 int main()
 {
   // preliminary_test1();
   // preliminary_test2();
-  // AYsym_test();
-  Cholesky_test();
+  AYsym_test();
+  // Cholesky_test();
   return 0;
 }

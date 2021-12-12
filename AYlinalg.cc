@@ -58,6 +58,19 @@ void AYsym::print_mat(bool space_)
   if (space_) printf("\n");
 }
 
+void AYsym::fprintf_sym(char name[], bool verbose_)
+{
+  char specfile[300]; memset(specfile, 0, 299); snprintf(specfile, 300, "%s.aydat", name);
+  char smlfile[300]; memset(smlfile, 0, 299); snprintf(smlfile, 300, "%s.aysml", name);
+  FILE * data_file = fopen(specfile, "wb");
+  FILE * aysml_file = fopen(smlfile, "w");
+  fprintf(aysml_file, "1 %d %d", N, len);
+  fclose(aysml_file);
+  fwrite(*A, sizeof(double), len, data_file);
+  fclose(data_file);
+  if (verbose_) printf("wrote file: %s.aydat/aysml\n", name);
+}
+
 void AYsym::init_123()
 {for (int i = 0; i < len; i++) A[0][i] = (double) (i+1);}
 

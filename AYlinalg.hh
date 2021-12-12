@@ -124,6 +124,7 @@ class AYmat
       friend class AY_SVDspace;
       friend class AYtens;
       friend class AYsym;
+      friend class data_cloud;
 
     private:
       void max_mag_elements_recursive(AYmat *top_vec_, int * index_array_, int i_next);
@@ -200,8 +201,8 @@ class AYsym
     AYsym(int N_);
     ~AYsym();
 
-
     void print_mat(bool space_ = true);
+    void fprintf_sym(char name[], bool verbose_=false);
     void init_eye();
     void init_123();
     void init_sqrmat(AYmat * m_ );
