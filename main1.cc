@@ -91,7 +91,23 @@ void AYsym_test()
   sym3.init_sqrmat(&m1);
   printf("sym3\n");
   sym3.print_mat();
+}
 
+void Cholesky_test()
+{
+  int M = 5, N = 3;
+  AYmat sym05(M, N); sym05.init_randuni();
+  AYsym sym1(N); sym1.init_sqrmat(&sym05);
+  AYvec x(N);
+  AYvec b(N); b.init_123();
+  sym05.print_mat();
+  sym1.print_mat();
+  b.print_vec();
+  AY_Choleskyspace space(N); space.alloc_workspace();
+  space.load_mat(&sym1);
+
+  space.solve_system(&x, &b);
+  x.print_mat();
 
 }
 
@@ -99,6 +115,7 @@ int main()
 {
   // preliminary_test1();
   // preliminary_test2();
-  AYsym_test();
+  // AYsym_test();
+  Cholesky_test();
   return 0;
 }

@@ -10,7 +10,7 @@ CDEPS = AYaux.h
 
 CPPDEPS = AYlinalg.hh
 
-OBJS1= AYaux.o AYlinalg.o AYmat.o AYvec.o AYrng.o AYtens.o
+OBJS1= AYaux.o AYlinalg.o AYmat.o AYvec.o AYrng.o AYtens.o AYdecomps.o
 
 %.o:%.c
 	$(CC) $(CFLAGS) $(IDIR) -c $<

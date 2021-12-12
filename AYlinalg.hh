@@ -157,45 +157,6 @@ class AYvec : public AYmat
     void svd_check();
 };
 
-class AY_SVDspace // for now, assuming that we are working with a long thin matrix. A relatively simple conditional can be implemented in order to handle short fat case
-{
-    public:
-      AY_SVDspace(AYmat * mat_);
-      AY_SVDspace(int M_, int N_);
-      ~AY_SVDspace();
-
-      int M_in, N_in;
-      gsl_matrix * U;
-      gsl_matrix * V;
-      gsl_vector * s;
-      gsl_vector * work;
-
-      void svd();
-      void load_U(AYmat * X_);
-      void unpack(AYmat * U_, AYmat * S_, AYmat * V_);
-};
-
-class AY_Choleskyspace
-{
-    public:
-      AY_Choleskyspace(AYsym * mat_);
-      AY_Choleskyspace(int N_);
-      ~AY_SVDspace();
-
-      gsl_matrix * mat_gsl;
-      gsl_vector * x_gsl;
-
-      bool workspace_alloc = false;
-
-      int N_in;
-      void load_mat(AYsym * mat_);
-      void load_mat(AYsym * mat_, double scal_);
-      void Cholesky_decomp();
-      void alloc_workspace();
-      void solve_system(AYvec* x_in, AYvec * b_in);
-      void solve_system(AYvec* x_in);
-};
-
 class AYcolstack : public AYmat
 {
   public:
@@ -261,6 +222,45 @@ class AYdata
   void init_write_split_tensor(char prefix_[], int M, int N);
   void write_split_tensor(AYmat * mat_);
   void end_write_split_tensor(char prefix_[]);
+};
+
+class AY_SVDspace // for now, assuming that we are working with a long thin matrix. A relatively simple conditional can be implemented in order to handle short fat case
+{
+    public:
+      AY_SVDspace(AYmat * mat_);
+      AY_SVDspace(int M_, int N_);
+      ~AY_SVDspace();
+
+      int M_in, N_in;
+      gsl_matrix * U;
+      gsl_matrix * V;
+      gsl_vector * s;
+      gsl_vector * work;
+
+      void svd();
+      void load_U(AYmat * X_);
+      void unpack(AYmat * U_, AYmat * S_, AYmat * V_);
+};
+
+class AY_Choleskyspace
+{
+    public:
+      AY_Choleskyspace(AYsym * mat_);
+      AY_Choleskyspace(int N_);
+      ~AY_Choleskyspace();
+
+      gsl_matrix * mat_gsl;
+      gsl_vector * x_gsl;
+
+      bool workspace_alloc = false;
+
+      int N_in;
+      void load_mat(AYsym * mat_);
+      void load_mat(AYsym * mat_, double scal_);
+      void Cholesky_decomp();
+      void alloc_workspace();
+      void solve_system(AYvec* x_in, AYvec * b_in);
+      void solve_system(AYvec* x_in);
 };
 
 void AYlinalg_svd(AYmat * mat_, AY_SVDspace * space_);
