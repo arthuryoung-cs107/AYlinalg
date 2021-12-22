@@ -111,13 +111,59 @@ void Cholesky_test()
 
   space.solve_system(&x, &b);
   x.print_mat();
+
+  AYsym L(N);
+  AY_Choleskyspace space2(N);
+  space2.Cholesky_decomp(&sym1, &L);
+  L.print_mat();
+
+}
+
+void Cholesky_solve_test()
+{
+  int i,j;
+  int M = 5, N = 4;
+  AYmat sym05(M, N); sym05.init_randuni();
+  AYsym sym1(N); sym1.init_sqrmat(&sym05);
+  AY_Choleskyspace space(N);
+  AYsym * L_= new AYsym(N);
+  AYvec * r_= new AYvec(N); r_->init_123();
+  AYvec * z_= new AYvec(N);
+
+  space.Cholesky_decomp(&sym1, L_);
+
+  printf("L_:\n");
+  L_->print_mat();
+  printf("r_:\n");
+  r_->print_mat();
+
+
+  for ( i = 0; i < N; i++)
+  {
+    double sum = r_->A_ptr[i];
+    for ( j = 0; j < i; j++) sum -= z_->A_ptr[j]*L_->A[j][i-j];
+    z_->A_ptr[i] = sum/(L_->A[i][0]);
+  }
+  for ( i = N-1; i >= 0; i--)
+  {
+    double sum = z_->A_ptr[i];
+    for ( j = N-1; j > i; j--) sum -= z_->A_ptr[j]*L_->A[i][j-i];
+    z_->A_ptr[i] = sum/(L_->A[i][0]);
+  }
+  printf("z_:\n");
+  z_->print_mat();
+
+  char name1[50]; name_gen(name1, 50, "./dat_dir/sym1");
+  sym1.fprintf_sym(name1);
+
 }
 
 int main()
 {
   // preliminary_test1();
   // preliminary_test2();
-  AYsym_test();
+  // AYsym_test();
   // Cholesky_test();
+  Cholesky_solve_test();
   return 0;
 }

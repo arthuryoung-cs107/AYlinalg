@@ -259,12 +259,16 @@ class AY_Choleskyspace
       void load_mat(AYsym * mat_);
       void load_mat(AYsym * mat_, double scal_);
       void Cholesky_decomp();
+      void Cholesky_decomp(AYsym * mat_, AYsym * L_);
+      void iCholesky_decomp(AYsym * mat_, AYsym * L_, double threshold_ = 1e-4);
+      void unpack(AYsym * L_);
       void alloc_workspace();
       void solve_system(AYvec* x_in, AYvec * b_in);
       void solve_system(AYvec* x_in);
 };
 
 void AYlinalg_svd(AYmat * mat_, AY_SVDspace * space_);
+void AYlinalg_Cholesky_solve(AYsym * L_, AYvec *z_, AYvec * r_ ); 
 
 AYmat * aysml_read(char name[]);
 AYvec * aysml_read_vec(char name[]);
