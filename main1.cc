@@ -158,12 +158,40 @@ void Cholesky_solve_test()
 
 }
 
+void check_sorting()
+{
+  int N = 10;
+  int Ntop = 10;
+  AYvec vec1(N); vec1.init_randuni();
+  AYvec top1(Ntop);
+  int * ind1 = new int[Ntop];
+
+  for (int i = 0; i < N; i++) vec1.A_ptr[i] -= 0.5;
+  vec1.print_vec();
+  printf("norm 1: %e\n", vec1.norm_1());
+
+
+  vec1.max_mag_elements_ordered(&top1, ind1);
+
+  for (int i = 0; i < Ntop; i++) printf("%d %f\n", ind1[i], top1.A_ptr[i]);
+
+  printf("\n");
+  vec1.Proj_1(&top1, ind1);
+  top1.print_vec();
+  printf("norm 1: %e\n", top1.norm_1());
+
+
+  delete ind1 ;
+}
+
+
 int main()
 {
   // preliminary_test1();
   // preliminary_test2();
   // AYsym_test();
   // Cholesky_test();
-  Cholesky_solve_test();
+  // Cholesky_solve_test();
+  check_sorting();
   return 0;
 }

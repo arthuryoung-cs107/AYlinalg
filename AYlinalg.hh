@@ -113,6 +113,8 @@ class AYmat
       int min_mag_elements(AYmat *top_vec_, int *index_array_);
       void min_mag_elements_ordered(AYmat *top_vec_, int *index_array_);
 
+      void Proj_1(AYmat *z_, int * ind_vec_, double R_=1.0);
+
       virtual void svd(gsl_vector *S, gsl_matrix *V, gsl_vector *work);
       virtual void svd_check();
 
@@ -268,7 +270,7 @@ class AY_Choleskyspace
 };
 
 void AYlinalg_svd(AYmat * mat_, AY_SVDspace * space_);
-void AYlinalg_Cholesky_solve(AYsym * L_, AYvec *z_, AYvec * r_ ); 
+void AYlinalg_Cholesky_solve(AYsym * L_, AYvec *z_, AYvec * r_ );
 
 AYmat * aysml_read(char name[]);
 AYvec * aysml_read_vec(char name[]);

@@ -636,6 +636,27 @@ void AYmat::min_mag_elements_recursive(AYmat *top_vec_, int * index_array_, int 
   if (i_next < (top_vec_->M-1)) min_mag_elements_recursive(top_vec_, index_array_, i_next+1);
 }
 
+void AYmat::Proj_1(AYmat *z_, int * ind_vec_, double R_)
+{
+  double tau, tau_test, acc=0.0, val_it, y_it;
+  int K=0, k;
+  max_mag_elements_ordered(z_, ind_vec_);
+  do
+  {
+    val_it = abs(z_->A_ptr[K]);
+    acc += val_it;
+    tau_test = (acc-R_)/((double)(K+1));
+    tau = (tau_test < val_it) ? tau_test : tau;
+    K++;
+  } while ((tau_test < val_it) && (K<M*N));
+  for ( k = 0; k < K-1; k++) // the previous iteration gives us the index where this stops
+  {
+    val_it = abs(A_ptr[ind_vec_[k]]) - tau;
+    z_->A_ptr[ind_vec_[k]] = ((A_ptr[ind_vec_[k]] > 0.0) ? val_it : -1.0*val_it);
+  }
+  for ( k = K-1; k < M*N; k++) z_->A_ptr[ind_vec_[k]] = 0.0;
+}
+
 void AYmat::svd(gsl_vector * S_in, gsl_matrix * V_in, gsl_vector * work) {GSL_init(); gsl_linalg_SV_decomp(A_gsl, V_in, S_in, work);}
 
 void AYmat::svd_check()
