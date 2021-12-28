@@ -591,10 +591,7 @@ void AYmat::max_mag_elements_ordered(AYmat *top_vec_, int *index_array_)
     top_vec_->A_ptr[i_it] = val_temp; index_array_[i_it] = index_temp;
     max_mag_elements_recursive(top_vec_, index_array_, 1);
   }
-  else
-  {
-    printf("AYmat: max_mag_elements_ordered failed, searching for %d values within M.N = %d elements\n", top_vec_->N, M*N);
-  }
+  else printf("AYmat: max_mag_elements_ordered failed, searching for %d values within M.N = %d elements\n", top_vec_->N, M*N);
 }
 void AYmat::min_mag_elements_ordered(AYmat *top_vec_, int *index_array_)
 {
@@ -609,10 +606,7 @@ void AYmat::min_mag_elements_ordered(AYmat *top_vec_, int *index_array_)
     top_vec_->A_ptr[i_it] = val_temp; index_array_[i_it] = index_temp;
     min_mag_elements_recursive(top_vec_, index_array_, 1);
   }
-  else
-  {
-    printf("AYmat: min_mag_elements_ordered failed, searching for %d values within M.N = %d elements\n", top_vec_->N, M*N);
-  }
+  else printf("AYmat: min_mag_elements_ordered failed, searching for %d values within M.N = %d elements\n", top_vec_->N, M*N);
 }
 void AYmat::max_mag_elements_recursive(AYmat *top_vec_, int * index_array_, int i_next)
 {
@@ -638,23 +632,32 @@ void AYmat::min_mag_elements_recursive(AYmat *top_vec_, int * index_array_, int 
 
 void AYmat::Proj_1(AYmat *z_, int * ind_vec_, double R_)
 {
-  double tau, tau_test, acc=0.0, val_it, y_it;
-  int K=0, k;
-  max_mag_elements_ordered(z_, ind_vec_);
-  do
+  if ((z_->M*z_->N) == (M*N))
   {
-    val_it = abs(z_->A_ptr[K]);
-    acc += val_it;
-    tau_test = (acc-R_)/((double)(K+1));
-    tau = (tau_test < val_it) ? tau_test : tau;
-    K++;
-  } while ((tau_test < val_it) && (K<M*N));
-  for ( k = 0; k < K-1; k++) // the previous iteration gives us the index where this stops
-  {
-    val_it = abs(A_ptr[ind_vec_[k]]) - tau;
-    z_->A_ptr[ind_vec_[k]] = ((A_ptr[ind_vec_[k]] > 0.0) ? val_it : -1.0*val_it);
+    double tau, tau_test, acc=0.0, val_it, y_it;
+    int K=0, k;
+    max_mag_elements_ordered(z_, ind_vec_);
+    do
+    {
+      val_it = abs(z_->A_ptr[K]);
+      acc += val_it;
+      tau_test = (acc-R_)/((double)(K+1));
+      tau = (tau_test < val_it) ? tau_test : tau;
+      K++;
+    } while ((tau_test < val_it) && (K<M*N));
+    if (tau < 0.0) // if already in the unit ball
+    {for (int i = 0; i < N*M; i++) z_->A_ptr[i] = A_ptr[i];}
+    else
+    {
+      for (k = 0; k < K-1; k++) // the previous iteration gives us the index where this stops
+      {
+        val_it =  (A_ptr[ind_vec_[k]]) - tau;
+        z_->A_ptr[ind_vec_[k]] = ((A_ptr[ind_vec_[k]] > 0.0) ? val_it : -1.0*val_it);
+      }
+      for ( k = K-1; k < M*N; k++) z_->A_ptr[ind_vec_[k]] = 0.0;
+    }
   }
-  for ( k = K-1; k < M*N; k++) z_->A_ptr[ind_vec_[k]] = 0.0;
+  else printf("AYmat: Proj_1 failed, dimension mismatch\n");
 }
 
 void AYmat::svd(gsl_vector * S_in, gsl_matrix * V_in, gsl_vector * work) {GSL_init(); gsl_linalg_SV_decomp(A_gsl, V_in, S_in, work);}

@@ -166,16 +166,18 @@ void check_sorting()
   AYvec top1(Ntop);
   int * ind1 = new int[Ntop];
 
-  for (int i = 0; i < N; i++) vec1.A_ptr[i] -= 0.5;
-  vec1.print_vec();
+  for (int i = 0; i < N; i++) vec1.A_ptr[i] = 0.001*(vec1.A_ptr[i]-0.5);
+  printf("vec 1:\n");
+  vec1.print_vec(false);
   printf("norm 1: %e\n", vec1.norm_1());
 
 
   vec1.max_mag_elements_ordered(&top1, ind1);
 
+  printf("\nvec 1, ordered:\n");
   for (int i = 0; i < Ntop; i++) printf("%d %f\n", ind1[i], top1.A_ptr[i]);
 
-  printf("\n");
+  printf("\nvec 1, projected\n ");
   vec1.Proj_1(&top1, ind1);
   top1.print_vec();
   printf("norm 1: %e\n", top1.norm_1());
