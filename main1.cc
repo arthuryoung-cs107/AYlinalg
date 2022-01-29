@@ -54,12 +54,16 @@ void AYsym_test()
   AYsym eye(N); eye.init_eye();
   AYsym sym2(N); sym2.init_123();
   AYsym sym3(N);
+  AYsym sym4(N);
   AYvec v1(N); v1.init_123();
   AYvec v2(N); v2.init_0();
   AYvec v3(N); v3.init_123();
   AYvec v4(N); v4.init_123();
   AYvec v5(N); v5.init_0();
+  AYvec v6(N); v6.init_randuni();
+  AYvec v7(N); v7.init_randuni();
   AYmat m1(M, N); m1.init_123();
+  AYmat m2(M, N); m2.init_randuni();
 
   printf("v1\n");
   v1.print_vec();
@@ -94,6 +98,22 @@ void AYsym_test()
 
   char name3[50]; name_gen(name3, 50, "./dat_dir/sym3");
   sym3.fprintf_sym(name3);
+
+  sym4.init_sqrmat(&m2);
+  printf("sym4\n");
+  sym4.print_mat();
+
+  printf("v6\n");
+  v6.print_vec();
+  printf("v7\n");
+  v7.print_vec();
+
+  printf("v^T A v = %f\n", sym4.vT_A_v(&v6, &v7));
+  printf("v7\n");
+  v7.print_vec();
+
+
+
 }
 
 void Cholesky_test()
@@ -167,9 +187,10 @@ void check_sorting()
   int * ind1 = new int[Ntop];
 
   for (int i = 0; i < N; i++) vec1.A_ptr[i] = 0.001*(vec1.A_ptr[i]-0.5);
+  // for (int i = 0; i < N; i++) vec1.A_ptr[i] = vec1.A_ptr[i]-0.5;
   printf("vec 1:\n");
   vec1.print_vec(false);
-  printf("norm 1: %e\n", vec1.norm_1());
+  printf("vec1, norm 1: %e\n", vec1.norm_1());
 
 
   vec1.max_mag_elements_ordered(&top1, ind1);
@@ -177,10 +198,15 @@ void check_sorting()
   printf("\nvec 1, ordered:\n");
   for (int i = 0; i < Ntop; i++) printf("%d %f\n", ind1[i], top1.A_ptr[i]);
 
-  printf("\nvec 1, projected\n ");
   vec1.Proj_1(&top1, ind1);
-  top1.print_vec();
-  printf("norm 1: %e\n", top1.norm_1());
+
+  printf("\nvec 1, projected\n ");
+  top1.print_vec(false);
+  printf("vec 1, projected, norm 1: %e\n", top1.norm_1());
+
+  printf("\nvec 1:\n");
+  vec1.print_vec(false);
+  printf("vec1, norm 1: %e\n", vec1.norm_1());
 
 
   delete ind1 ;
@@ -191,9 +217,9 @@ int main()
 {
   // preliminary_test1();
   // preliminary_test2();
-  // AYsym_test();
+  AYsym_test();
   // Cholesky_test();
   // Cholesky_solve_test();
-  check_sorting();
+  // check_sorting();
   return 0;
 }
