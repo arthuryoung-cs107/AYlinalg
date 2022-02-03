@@ -8,9 +8,9 @@ LINK= -L/usr/local/lib/ -lm -lgsl -lgslcblas -lfftw3 -lblas
 
 CDEPS = AYaux.h
 
-CPPDEPS = AYlinalg.hh RYdat2AYdat.hh
+CPPDEPS = AYlinalg.hh
 
-OBJS1= AYaux.o AYlinalg.o AYmat.o AYvec.o AYrng.o AYtens.o AYdecomps.o RYdat2AYdat.o
+OBJS1= AYaux.o AYlinalg.o AYmat.o AYvec.o AYrng.o AYtens.o AYdecomps.o AYdata.o
 
 %.o:%.c
 	$(CC) $(CFLAGS) $(IDIR) -c $<

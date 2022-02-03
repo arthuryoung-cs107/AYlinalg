@@ -42,6 +42,47 @@ void preliminary_test2()
   M1_back->print_mat();
 }
 
+void preliminary_test3()
+{
+  int W=5;
+  int M=4;
+  int N=3;
+  AYtens T1(W, M, N); T1.init_123();
+  double *** T1_tpr = AYd3tensor(W, M, N);
+
+  for (int i = 0; i < W*M*N; i++)
+  {
+    printf("%f\n", T1.T_AT[0][0][i]);
+    T1_tpr[0][0][i] = (double) i+1;
+  }
+
+  printf("\n");
+
+  int count = 0;
+  for (int k = 0; k < W; k++)
+  {
+    for (int i = 0; i < M; i++)
+    {
+      for (int j = 0; j < N; j++)
+      {
+        printf("%f ", T1_tpr[k][i][j]);
+      }
+      printf("\n");
+    }
+    printf("\n");
+  }
+
+  printf("\n" );
+
+  for (int i = 0; i < W; i++)
+  {
+    T1.mat[i].print_mat();
+  }
+  free_AYd3tensor(T1_tpr);
+}
+
+
+
 void AYsym_test()
 {
   int N = 4;
@@ -185,9 +226,10 @@ int main()
 {
   // preliminary_test1();
   // preliminary_test2();
+  preliminary_test3();
   // AYsym_test();
   // Cholesky_test();
   // Cholesky_solve_test();
-  check_sorting();
+  // check_sorting();
   return 0;
 }

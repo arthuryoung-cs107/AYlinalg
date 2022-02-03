@@ -8,7 +8,7 @@ extern "C"
   #include "AYaux.h"
 }
 
-AYtens::AYtens(int W_, int M_, int N_): W(W_), M(M_), N(N_), T_AT(AYd3tensor(W_, N_, M_)), mat((AYmat*)malloc((size_t)(W_)*sizeof(AYmat)))
+AYtens::AYtens(int W_, int M_, int N_): W(W_), M(M_), N(N_), T_AT(AYd3tensor(W_, N_, M_)), mat((AYmat*)malloc((size_t)(W_*sizeof(AYmat))))
 {
   for (int i = 0; i < W; i++)
   {
@@ -49,7 +49,6 @@ void AYtens::print_tens(bool space_)
 }
 void AYtens::fprintf_tens(char name[], bool verbose_)
 {
-  int i;
   char specfile[300]; memset(specfile, 0, 299); snprintf(specfile, 300, "%s.aytens", name);
   char smlfile[300]; memset(smlfile, 0, 299); snprintf(smlfile, 300, "%s.aysml", name);
   FILE * data_file = fopen(specfile, "wb");
