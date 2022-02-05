@@ -6,11 +6,9 @@ CFLAGS= -O3 -I. -fopenmp -DGSL -DKNUTH
 IDIR= -I/usr/local/include/
 LINK= -L/usr/local/lib/ -lm -lgsl -lgslcblas -lfftw3 -lblas
 
-CDEPS = AYaux.h
-
-CPPDEPS = AYlinalg.hh
-
 OBJS1= AYaux.o AYlinalg.o AYmat.o AYvec.o AYrng.o AYtens.o AYdecomps.o AYdata.o
+
+OBJS2= AYaux.o
 
 %.o:%.c
 	$(CC) $(CFLAGS) $(IDIR) -c $<
@@ -23,8 +21,12 @@ all: test1
 test1: main1.cc $(OBJS1)
 	$(CXX) $(CFLAGS) $(IDIR) -o $@ $^ $(LINK)
 
+scratch: scratch.cc $(OBJS2)
+	$(CXX) $(CFLAGS) $(IDIR) -o $@ $^ $(LINK)
+
 clean:
 	rm -f test1
+	rm -f scratch
 	rm -f *.o
 clean_dat:
 	rm -f *.dat
