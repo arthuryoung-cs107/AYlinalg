@@ -1,6 +1,6 @@
 #include <cstdio>
 #include <cstring>
-
+#include <cstdlib>
 
 extern "C"
 {
@@ -8,8 +8,9 @@ extern "C"
 }
 
 void clear_string(char *ptr_, size_t size_)
-{  
-  memset(ptr_, '$', (size_t)(size_-1));
+{
+  // memset(ptr_, '$', (size_t)(size_-1));
+  strcpy(ptr_, "");
 }
 
 int main()
@@ -34,17 +35,24 @@ int main()
 
   printf("dest2 strlen: %d, dest2 sizeof: %d\n", strlen(dest2), sizeof(dest2) );
   printf("dest2: %s\n", dest2);
+  printf("dest2, all: ");
   for (int i = 0; i < 50; i++)
   {
     printf("%c ", dest2[i]);
   }
   printf("\n");
+  printf("dest3, all: ");
   for (int i = 0; i < 50; i++)
   {
     printf("%c ", dest3[i]);
   }
   printf("\n");
 
+  char * dest3_copy = string_gen_pruned(dest3);
+  printf("dest3 copy strlen, sizeof: %d, %d\n", strlen(dest3_copy), sizeof(dest3_copy));
+  printf("%s\n", dest3_copy);
+
+  free(dest3_copy);
 
   return 0;
 }

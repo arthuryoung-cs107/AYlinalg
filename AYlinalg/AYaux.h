@@ -5,6 +5,7 @@
 
 void aysml_gen(char name[], int m, int n);
 void name_gen(char ptr[], int length, const char * name);
+char * string_gen_pruned(char * in_);
 
 double knuth_random_uni(double low, double high, uint64_t * carry);
 uint64_t lcg_uni(uint64_t *lcg_carry); // call this evertime you want a random integer, or rand()
