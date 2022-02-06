@@ -22,14 +22,6 @@ void name_gen(char ptr[], int length, const char * name)
   memcpy(ptr, name, length*sizeof(char));
 }
 
-char * string_gen_pruned(char * in_)
-{
-  size_t len = (size_t)(strlen(in_) + 1);
-  char * out = (char *)malloc((size_t)(len*(sizeof(char))));
-  strcpy(out, in_);
-  return out;
-}
-
 double knuth_random_uni(double low, double high, uint64_t * carry) // knuth rng
 {
   double rand_uni = ((double) lcg_uni(carry))/(lcg_sze());

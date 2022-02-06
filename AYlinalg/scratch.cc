@@ -1,6 +1,7 @@
 #include <cstdio>
 #include <cstring>
-#include <cstdlib>
+
+#include "AYlinalg.hh"
 
 extern "C"
 {
@@ -52,7 +53,7 @@ int main()
   printf("dest3 copy strlen, sizeof: %d, %d\n", strlen(dest3_copy), sizeof(dest3_copy));
   printf("%s\n", dest3_copy);
 
-  free(dest3_copy);
+  delete dest3_copy;
 
   return 0;
 }
