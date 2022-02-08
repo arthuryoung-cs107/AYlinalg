@@ -187,7 +187,7 @@ class AYtens
     void set(int i_, int j_, int k_, double val_);
     void print_dims();
     void print_tens(bool space_ = true);
-    void fprintf_tens( char name_[], bool verbose_=false);
+    void fprintf_tens( char name_[], int split_=1, bool verbose_=false);
     void init_0();
     void init_123();
     void init_mats123();

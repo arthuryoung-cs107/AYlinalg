@@ -47,10 +47,11 @@ void AYtens::print_tens(bool space_)
   }
   if (space_) printf("\n");
 }
-void AYtens::fprintf_tens(char name[], bool verbose_)
+void AYtens::fprintf_tens(char name[], int split_, bool verbose_)
 {
   char specfile[300]; memset(specfile, 0, 299); snprintf(specfile, 300, "%s.aydat", name);
-  char smlfile[300]; memset(smlfile, 0, 299); snprintf(smlfile, 300, "%s.aysml", name);
+  char smlfile[300]; memset(smlfile, 0, 299); snprintf(smlfile, 300, "%s.aysml", name);  
+
   FILE * data_file = fopen(specfile, "wb");
   FILE * aysml_file = fopen(smlfile, "w");
   fprintf(aysml_file, "1 %d %d %d", M, N, W);
