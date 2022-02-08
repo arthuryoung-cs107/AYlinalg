@@ -1,6 +1,7 @@
 #include <cstdio>
 #include <cstring>
-#include <cstdlib>
+
+#include "AYlinalg.hh"
 
 #include <iostream>
 #include <bitset>
@@ -55,7 +56,7 @@ void string_tests()
   printf("dest3 copy strlen, sizeof: %ld, %ld\n", strlen(dest3_copy), sizeof(dest3_copy));
   printf("%s\n", dest3_copy);
 
-  free(dest3_copy);
+  delete dest3_copy;
 }
 
 void pbit(int in_)

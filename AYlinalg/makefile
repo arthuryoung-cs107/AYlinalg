@@ -8,7 +8,7 @@ LINK= -L/usr/local/lib/ -lm -lgsl -lgslcblas -lfftw3 -lblas
 
 OBJS1= AYaux.o AYlinalg.o AYmat.o AYvec.o AYrng.o AYtens.o AYdecomps.o AYdata.o
 
-OBJS2= AYaux.o
+OBJS2= AYaux.o AYlinalg.o AYmat.o AYvec.o AYrng.o AYtens.o AYdecomps.o AYdata.o
 
 %.o:%.c
 	$(CC) $(CFLAGS) $(IDIR) -c $<
