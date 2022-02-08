@@ -211,7 +211,7 @@ AYvec * aysml_read_vec(char name[])
 AYtens * aysml_read_tens(char name[])
 {
   char aysml_specs[300]; memset(aysml_specs, 0, 299); snprintf(aysml_specs, 300, "%s.aysml", name);
-  char aytens_name[300]; memset(aytens_name, 0, 299); snprintf(aytens_name, 300, "%s.aytens", name);
+  char aytens_name[300]; memset(aytens_name, 0, 299); snprintf(aytens_name, 300, "%s.aydat", name);
   int type, M, N, W;
   std::ifstream tens_file;
   tens_file.open(aysml_specs);

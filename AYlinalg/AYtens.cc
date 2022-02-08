@@ -49,7 +49,7 @@ void AYtens::print_tens(bool space_)
 }
 void AYtens::fprintf_tens(char name[], bool verbose_)
 {
-  char specfile[300]; memset(specfile, 0, 299); snprintf(specfile, 300, "%s.aytens", name);
+  char specfile[300]; memset(specfile, 0, 299); snprintf(specfile, 300, "%s.aydat", name);
   char smlfile[300]; memset(smlfile, 0, 299); snprintf(smlfile, 300, "%s.aysml", name);
   FILE * data_file = fopen(specfile, "wb");
   FILE * aysml_file = fopen(smlfile, "w");
@@ -57,7 +57,7 @@ void AYtens::fprintf_tens(char name[], bool verbose_)
   fclose(aysml_file);
   fwrite(**T_AT, sizeof(double), W*M*N, data_file);
   fclose(data_file);
-  if (verbose_) printf("wrote file: %s.aytens/aysml\n", name);
+  if (verbose_) printf("wrote file: %s.aydat/aysml\n", name);
 }
 void AYtens::init_0()
 {for (int i = 0; i < W*M*N; i++) *(**T_AT + i) = 0.0;}

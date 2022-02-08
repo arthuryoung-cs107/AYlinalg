@@ -1,0 +1,80 @@
+classdef AYdata < handle
+  properties
+
+  end
+  methods(Static)
+    function obj = AYdata()
+
+    end
+    function aysml_read(obj,name)
+      dims = readmatrix([name '.aysml']);
+      if (size(dims, 1) == 1)
+        switch size(dims, 2)
+          case 2 %% matrix or vector case
+            m = dims(1);
+            n = dims(2);
+            id = fopen([name '.aydat']);
+            dat_return = (fread( id,[m, n], 'float64=>float64'));
+            fclose(id);
+
+          case 3 %% AYsym case
+            m = dims(2);
+            n = m;
+            dat_return = zeros(m, n);
+            id = fopen([name '.aydat']);
+            for i=1:n
+              row = (fread( id,[n-i+1, 1], 'float64=>float64'));
+              dat_return(i, i) = row(1);
+              dat_return(i, i+1:n) = row(2:length(row));
+              dat_return(i+1:n, i) = row(2:length(row));
+            end
+            fclose(id);
+          case 4
+            m = dims(2);
+            n = dims(3);
+            w = dims(4);
+            dat_return = nan(m, n, w);
+            if (dims(1)== 1)
+              id = fopen([name '.aydat']);
+              for i=1:w
+                dat_return(:, :, i) = (fread( id,[m, n], 'float64=>float64'));
+              end
+              fclose(id);
+            else
+
+            end
+        end
+
+      else
+        fprintf('aysml_read: Failed. Implement the data structure case');
+      end
+    end
+    function aydat_write(obj, mat, name)
+      switch length(size(mat))
+        case 2
+          file_id = fopen([name, '.aydat'], 'w+');
+          fwrite(file_id, mat(:), 'double');
+          fclose(file_id);
+          file_id2 = fopen([name, '.aysml'], 'w+');
+          fprintf(file_id2, '%d %d', size(mat, 1), size(mat, 2));
+          fclose(file_id2);
+        case 1
+          file_id = fopen([name, '.aydat'], 'w+');
+          fwrite(file_id, mat(:), 'double');
+          fclose(file_id);
+          file_id2 = fopen([name, '.aysml'], 'w+');
+          fprintf(file_id2, '%d %d', length(mat), 1);
+          fclose(file_id2);
+        case 3
+          file_id = fopen([name, '.aytens'], 'w+');
+          for i=1:size(mat, 3)
+            fwrite(file_id, reshape(mat(:, :, i), [size(mat, 1)*size(mat, 2), 1]), 'double');
+          end
+          fclose(file_id);
+          file_id2 = fopen([name, '.aysml'], 'w+');
+          fprintf(file_id2, '1 %d %d %d', size(mat, 1), size(mat, 2), size(mat, 3));
+          fclose(file_id2);
+      end
+    end
+  end
+end
