@@ -1,13 +1,13 @@
 classdef AYdata < handle
   properties
-
+    len;
   end
   methods(Static)
-    function obj = AYdata()
-
+    function obj = AYdata(len_)
+      obj.len = len_;
     end
-    function dat_return = aysml_read(obj,name)
-      dims = readmatrix([name '.aysml']);
+    function dat_return = aysml_read(name)
+      dims = dlmread([name, '.aysml']);
       if (size(dims, 1) == 1)
         switch size(dims, 2)
           case 2 %% matrix or vector case
@@ -40,9 +40,9 @@ classdef AYdata < handle
                 dat_return(:, :, i) = (fread( id,[m, n], 'float64=>float64'));
               end
               fclose(id);
-            elseif (dims(1)== 1) %% a file for every page of tensor
+            elseif (dims(1)== 0) %% a file for every page of tensor
               for i=1:w
-                id = fopen([name num2str(i-1) '.aydat']);
+                id = fopen([name '.' num2str(i-1) '.aydat']);
                 dat_return(:, :, i) = (fread( id,[m, n], 'float64=>float64'));
                 fclose(id);
               end
@@ -50,10 +50,10 @@ classdef AYdata < handle
         end
       else
         fprintf('aysml_read: Failed. Implement the data structure case');
-        dat_return = 0; 
+        dat_return = 0;
       end
     end
-    function aydat_write(obj, mat, name)
+    function aydat_write(mat, name)
       switch length(size(mat))
         case 2
           file_id = fopen([name, '.aydat'], 'w+');
@@ -70,7 +70,7 @@ classdef AYdata < handle
           fprintf(file_id2, '%d %d', length(mat), 1);
           fclose(file_id2);
         case 3
-          file_id = fopen([name, '.aytens'], 'w+');
+          file_id = fopen([name, '.aydat'], 'w+');
           for i=1:size(mat, 3)
             fwrite(file_id, reshape(mat(:, :, i), [size(mat, 1)*size(mat, 2), 1]), 'double');
           end
@@ -78,6 +78,20 @@ classdef AYdata < handle
           file_id2 = fopen([name, '.aysml'], 'w+');
           fprintf(file_id2, '1 %d %d %d', size(mat, 1), size(mat, 2), size(mat, 3));
           fclose(file_id2);
+      end
+    end
+    function aydat_write_split_tens(tens, name)
+      if (length(size(tens))==3)
+        for i=1:size(tens, 3)
+          file_id = fopen([name '.' num2str(i-1) '.aydat'], 'w+');
+          fwrite(file_id, reshape(tens(:, :, i), [size(tens, 1)*size(tens, 2), 1]), 'double');
+          fclose(file_id);
+        end
+        file_id2 = fopen([name, '.aysml'], 'w+');
+        fprintf(file_id2, '0 %d %d %d', size(tens, 1), size(tens, 2), size(tens, 3));
+        fclose(file_id2);
+      else
+        fprintf('AYdata: aydat_write_split_tens failed, did not pass in a tensor');
       end
     end
   end

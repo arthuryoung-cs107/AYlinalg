@@ -1,7 +1,7 @@
 classdef AYfig < handle
   properties
     fig;
-    props_in_;
+    props_in;
   end
   methods(Static)
     function obj = AYfig(props_in_)

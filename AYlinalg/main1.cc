@@ -22,27 +22,9 @@ void preliminary_test1()
 
   printf("M1\n");
   M1.print_mat();
-
-  char name1[50]; name_gen(name1, 50, "./dat_dir/tens1");
-  char name2[50]; name_gen(name2, 50, "./dat_dir/mat1");
-  M1.fprintf_mat(name2);
-  T1.fprintf_tens(name1);
 }
 
-void preliminary_test2()
-{
-  char name1_back[50]; name_gen(name1_back, 50, "./dat_dir/tens1_back");
-  char name2_back[50]; name_gen(name2_back, 50, "./dat_dir/mat1_back");
-
-  printf("T1 back\n");
-  AYtens * T1_back = aysml_read_tens(name1_back);
-  T1_back->print_tens();
-  printf("M1 back\n");
-  AYmat * M1_back = aysml_read(name2_back);
-  M1_back->print_mat();
-}
-
-void preliminary_test3()
+void AYtens_test()
 {
   int W=5;
   int M=4;
@@ -80,8 +62,6 @@ void preliminary_test3()
   }
   free_AYd3tensor(T1_tpr);
 }
-
-
 
 void AYsym_test()
 {
@@ -128,7 +108,7 @@ void AYsym_test()
   printf("sym3\n");
   sym3.print_mat();
 
-  char name3[50]; name_gen(name3, 50, "./dat_dir/sym3");
+  char name3[] = "./dat_dir/sym3";
   sym3.fprintf_sym(name3);
 }
 
@@ -189,12 +169,11 @@ void Cholesky_solve_test()
   printf("z_:\n");
   z_->print_mat();
 
-  char name1[50]; name_gen(name1, 50, "./dat_dir/sym1");
+  char name1[] = "./dat_dir/sym1";
   sym1.fprintf_sym(name1);
-
 }
 
-void check_sorting()
+void sorting_test()
 {
   int N = 10;
   int Ntop = 10;
@@ -218,18 +197,76 @@ void check_sorting()
   top1.print_vec();
   printf("norm 1: %e\n", top1.norm_1());
 
-
   delete ind1 ;
+}
+
+void write_test()
+{
+  int M=5,N=3,W=4;
+
+  AYmat mat1(M, N); mat1.init_123();
+  AYvec vec1(M); vec1.init_123();
+  AYsym sym1(M); sym1.init_123();
+  AYtens tens1(W, M, N); tens1.init_123();
+
+  AYmat mat2(M, N); mat2.init_randuni();
+  AYvec vec2(M); vec2.init_randuni();
+  AYsym sym2(N); sym2.init_sqrmat(&mat2);
+  AYtens tens2(W, M, N); tens2.init_mats123();
+
+  printf("mat1:\n"); mat1.print_mat();
+  printf("vec1:\n"); vec1.print_vec();
+  printf("sym1:\n"); sym1.print_mat();
+  printf("tens1:\n"); tens1.print_tens();
+  printf("mat2:\n"); mat2.print_mat();
+  printf("vec2:\n"); vec2.print_vec();
+  printf("sym2:\n"); sym2.print_mat();
+  printf("tens2:\n"); tens2.print_tens();
+
+  mat1.fprintf_mat("./dat_dir/mat1", true);
+  vec1.fprintf_vec("./dat_dir/vec1", true);
+  sym1.fprintf_sym("./dat_dir/sym1", true);
+  tens1.fprintf_tens("./dat_dir/tens1", 1, true);
+  mat2.fprintf_mat("./dat_dir/mat2", true);
+  vec2.fprintf_vec("./dat_dir/vec2", true);
+  sym2.fprintf_sym("./dat_dir/sym2", true);
+  tens2.fprintf_tens("./dat_dir/tens2", 1, true);
+  tens1.fprintf_tens("./dat_dir/tens1_split", 0, true);
+  tens2.fprintf_tens("./dat_dir/tens2_split", 0, true);
+}
+
+void read_test()
+{
+  AYmat mat1("./dat_dir/mat1_b");
+  AYvec vec1("./dat_dir/vec1_b");
+  AYtens tens1("./dat_dir/tens1_b");
+  AYmat mat2("./dat_dir/mat2_b");
+  AYvec vec2("./dat_dir/vec2_b");
+  AYtens tens2("./dat_dir/tens2_b");
+  AYtens tens1_split("./dat_dir/tens1_split_b");
+  AYtens tens2_split("./dat_dir/tens2_split_b");
+
+  printf("mat1:\n"); mat1.print_mat();
+  printf("vec1:\n"); vec1.print_vec();
+  printf("tens1:\n"); tens1.print_tens();
+  printf("mat2:\n"); mat2.print_mat();
+  printf("vec2:\n"); vec2.print_vec();
+  printf("tens2:\n"); tens2.print_tens();
+  printf("tens1_split:\n"); tens1_split.print_tens();
+  printf("tens2_split:\n"); tens2_split.print_tens();
+
 }
 
 int main()
 {
   // preliminary_test1();
-  // preliminary_test2();
-  preliminary_test3();
+  // AYtens_test();
   // AYsym_test();
   // Cholesky_test();
   // Cholesky_solve_test();
-  // check_sorting();
+  // sorting_test();
+  // write_test();
+  read_test();
+
   return 0;
 }
