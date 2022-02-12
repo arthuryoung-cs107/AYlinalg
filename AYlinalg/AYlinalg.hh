@@ -229,10 +229,9 @@ class AYsym
 class AYdata
 {
   public:
-    bool dims_alloc_flag;
     int Frames;
     int depth;
-    int ** dims;
+    int ** dims=NULL;
     AYdata(int Frames_, int depth_);
     AYdata();
     ~AYdata();
