@@ -220,3 +220,10 @@ char * string_gen_pruned(const char * in_)
   strcpy(out, in_);
   return out;
 }
+
+
+void AYfatalerror(char *msg, int exit_code)
+{printf("%s\n", msg); exit(exit_code);}
+
+void AYfatalerror(const char *msg, int exit_code)
+{AYfatalerror((char*)msg, exit_code);}

@@ -18,7 +18,6 @@ void aysml_gen(char name[], int m, int n)
 void name_gen(char ptr[], int length, const char * name)
 {
   memset(ptr, 0, length-1);
-  // snprintf(ptr, length, name);
   memcpy(ptr, name, length*sizeof(char));
 }
 
