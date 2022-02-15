@@ -50,6 +50,8 @@ class AYmat
       AYmat(int M_, int N_);
       AYmat(char * name);
       AYmat(const char * name): AYmat((char*) name) {}
+      AYmat(gsl_matrix * m_);
+      AYmat(gsl_vector * m_);
       AYmat();
       ~AYmat();
 
@@ -141,6 +143,9 @@ class AYvec : public AYmat
   public:
     AYvec(int M_);
     AYvec(char * name_);
+    AYvec(AYmat * m_);
+    AYvec(gsl_matrix * m_);
+    AYvec(gsl_vector * v_);
     AYvec(const char * name): AYvec((char*)name) {}
 
     ~AYvec();
@@ -299,7 +304,7 @@ class AY_Choleskyspace
       void load_mat(AYsym * mat_, double scal_);
       void Cholesky_decomp();
       void Cholesky_decomp(AYsym * mat_, AYsym * L_);
-      void iCholesky_decomp(AYsym * mat_, AYsym * L_, double threshold_ = 1e-4);
+      void iCholesky_decomp(AYsym * mat_, AYsym * L_, double frac_ = 0.1);
       void unpack(AYsym * L_);
       void alloc_workspace();
       void solve_system(AYvec* x_in, AYvec * b_in);
@@ -308,17 +313,6 @@ class AY_Choleskyspace
 
 void AYlinalg_svd(AYmat * mat_, AY_SVDspace * space_);
 void AYlinalg_Cholesky_solve(AYsym * L_, AYvec *z_, AYvec * r_ );
-
-AYvec * AYmat_2_AYvec_gen(AYmat * X_in);
-void AYmat_2_AYvec_copy(AYmat * X_in, AYvec * x_in);
-AYmat * AYvec_2_AYmat_gen(AYvec * x_in);
-void AYvec_2_AYmat_copy(AYvec * x_in, AYmat * X_in);
-
-AYvec * GSL_2_AYvec_gen(gsl_matrix * mat_in);
-AYvec * GSL_2_AYvec_gen(gsl_vector * vec_in);
-AYmat * GSL_2_AYmat_gen(gsl_matrix * mat_in);
-AYmat * GSL_2_AYmat_gen(gsl_vector * vec_in);
-AYmat * GSL_2_diagAYmat_gen(gsl_vector * vec_in);
 
 char * string_gen_pruned(char * in_);
 char * string_gen_pruned(const char * in_);

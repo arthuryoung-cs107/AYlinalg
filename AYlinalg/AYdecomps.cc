@@ -90,10 +90,10 @@ void AY_Choleskyspace::Cholesky_decomp(AYsym * mat_, AYsym * L_)
   }
 }
 
-void AY_Choleskyspace::iCholesky_decomp(AYsym * mat_, AYsym * L_, double threshold_)
+void AY_Choleskyspace::iCholesky_decomp(AYsym * mat_, AYsym * L_, double frac_)
 {
   int i,j;
-  double mean=0.0;
+  double mean_mag=0.0, mag_min=DBL_MAX;
   for ( i = 0; i < N_in; i++)
   {
     //lower diagonal components and diagonal only, exploiting gsl technique
@@ -102,19 +102,23 @@ void AY_Choleskyspace::iCholesky_decomp(AYsym * mat_, AYsym * L_, double thresho
     for ( j = i; j < N_in; j++)
     {
       gsl_matrix_set(mat_gsl, i, j, mat_->A[i][j-i]);
-      mean +=  mat_->A[i][j-i];
+      double mag = abs(mat_->A[i][j-i]);
+      mean_mag += mag;
+      if (mag < mag_min) mag_min = mag;
     }
   }
-  mean = mean/((double) mat_->len);
-  gsl_linalg_cholesky_decomp(mat_gsl);
+  mean_mag = mean_mag/((double) mat_->len);
+  double thresh = mag_min + (frac_*(mean_mag-mag_min));
+  gsl_linalg_cholesky_decomp(mat_gsl); // this can still potentially fail, would it be better to sparsify original matrix?
   for ( i = 0; i < N_in; i++) // going through columns of gsl matrix
   {
     j = i;
-    L_->A[i][j-i] = gsl_matrix_get(mat_gsl, j, i);
+    double val = gsl_matrix_get(mat_gsl, j, i);
+    L_->A[i][j-i] = (abs(val) < thresh) ? 0.0 : val;
     for ( j = i+1; j < N_in; j++) // going through the rows of gsl matrix,
     {
-      if ((mat_->A[i][j-i]) < threshold_*mean) L_->A[i][j-i] = 0.0; // comparing to the average value
-      else L_->A[i][j-i] = gsl_matrix_get(mat_gsl, j, i);
+      val = gsl_matrix_get(mat_gsl, j, i);
+      L_->A[i][j-i] = (abs(val) < thresh) ? 0.0 : val;
     }
   }
 }

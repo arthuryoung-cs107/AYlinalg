@@ -59,6 +59,11 @@ AYmat::AYmat(char * name)
   delete buf;
 }
 
+AYmat::AYmat(gsl_matrix * m_): AYmat(m_->size1, m_->size2)
+{
+  for (int j = 0; j < N; j++) for (int i = 0; i < M; i++) AT[j][i] = gsl_matrix_get(m_, i, j);
+}
+
 AYmat::~AYmat()
 {
   if  (dmatrix_alloc_flag) free_AYdmatrix(AT);
