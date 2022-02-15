@@ -276,9 +276,9 @@ int main()
   // preliminary_test1();
   // AYtens_test();
   // AYsym_test();
-  AYdiag_test();
+  // AYdiag_test();
   // Cholesky_test();
-  // Cholesky_solve_test();
+  Cholesky_solve_test();
   // sorting_test();
   // write_test();
   // read_test();

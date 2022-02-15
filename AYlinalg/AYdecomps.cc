@@ -126,7 +126,7 @@ void AY_Choleskyspace::alloc_workspace()
 }
 void AY_Choleskyspace::solve_system(AYvec * x_in)
 {
-  gsl_linalg_cholesky_decomp(mat_gsl);
+  gsl_linalg_cholesky_decomp1(mat_gsl);
   gsl_linalg_cholesky_svx(mat_gsl, x_gsl);
   x_in->GSL_2_AYvec_copy(x_gsl);
 }
