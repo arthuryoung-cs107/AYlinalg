@@ -132,7 +132,21 @@ void Cholesky_test()
   AY_Choleskyspace space2(N);
   space2.Cholesky_decomp(&sym1, &L);
   L.print_mat();
+}
 
+void AYdiag_test()
+{
+  int N = 4;
+  int M = 5;
+  AYmat mat1(M, N); mat1.init_randuni();
+  AYdiag diag1(M); diag1.init_123();
+  AYsym sym1(N); sym1.init_XTWX(&mat1, &diag1);
+
+  printf("mat1:\n"); mat1.print_mat();
+  printf("diag1:\n"); diag1.print_mat();
+  printf("sym1:\n"); sym1.print_mat();
+
+  diag1.fprintf_diag("./dat_dir/diag1", true);
 }
 
 void Cholesky_solve_test()
@@ -262,11 +276,12 @@ int main()
   // preliminary_test1();
   // AYtens_test();
   // AYsym_test();
+  AYdiag_test();
   // Cholesky_test();
   // Cholesky_solve_test();
   // sorting_test();
   // write_test();
-  read_test();
+  // read_test();
 
   return 0;
 }

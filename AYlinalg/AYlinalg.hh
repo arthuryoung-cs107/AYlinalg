@@ -206,6 +206,29 @@ class AYtens
   private:
 };
 
+class AYdiag
+{
+  public:
+    int N;
+
+    double * A;
+
+    AYdiag(int N_);
+    AYdiag(AYmat * m_);
+    AYdiag(AYvec * v_);
+    ~AYdiag();
+
+    void print_mat(bool space_ = true);
+    void fprintf_diag(char * name_, bool verbose_ = false);
+    void fprintf_diag(const char * name_, bool verbose_= false) {fprintf_diag((char*)name_, verbose_);}
+    void init_eye();
+    void init_123();
+    void init_mat(AYmat * m_ );
+    void init_vec(AYvec * v_);
+    void mult_vec(AYvec * in_, AYvec * out_, bool diff_ = false);
+
+};
+
 class AYsym
 {
   public:
@@ -222,6 +245,7 @@ class AYsym
     void init_eye();
     void init_123();
     void init_sqrmat(AYmat * m_ );
+    void init_XTWX(AYmat * m_, AYdiag * w_);
     void mult_vec(AYvec * in_, AYvec * out_, bool diff_ = false);
     double vT_A_v(AYvec *v, AYvec * w);
 };
