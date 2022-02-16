@@ -290,10 +290,8 @@ class AY_Choleskyspace
       ~AY_Choleskyspace();
 
       gsl_matrix * mat_gsl;
-      gsl_vector * x_gsl;
-
-      bool workspace_alloc = false;
-
+      gsl_vector * x_gsl=NULL;
+      
       int N_in;
       void load_mat(AYsym * mat_);
       void load_mat(AYsym * mat_, double scal_);

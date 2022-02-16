@@ -149,9 +149,9 @@ double AYsym::vT_A_v(AYvec * v, AYvec * w)
       for (int j = 1; j < (N - i); j++)
       {
         w->A_ptr[i] += A[i][j]*v->A_ptr[i+j];
-        w->A_ptr[i+j] += A[i][j]*v->A_ptr[i];
+        w->A_ptr[i+j] += A[i][j]*v->A_ptr[i]; // only updates the vector DOWNSTREAM
       }
-      out += (w->A_ptr[i])*(v->A_ptr[i]); // actively updating the inner product
+      out += (w->A_ptr[i])*(v->A_ptr[i]); // actively updating the inner product. w is already fully calculated by this point
     }
   }
   else printf("AYsym: vT_A_v error, dimensions are (%d %d)(%d %d) = (%d %d)\n", N, N, v->M, v->N, w->M, w->N);
@@ -238,68 +238,6 @@ void AYdiag::mult_vec(AYvec * in_, AYvec * out_, bool diff_)
   {
     char msg[200]; sprintf(msg, "AYdiag: mult_vec fatal error, dimension mismatch (AYdiag: %d x %d, in: %d, out: %d)", N, N, in_->M, out_->M); AYfatalerror(msg);
   }
-}
-
-AYvec * AYmat_2_AYvec_gen(AYmat * X_in)
-{
-  AYvec * x_out = new AYvec((X_in->M)*(X_in->N));
-  memcpy(x_out->A_ptr, X_in->A_ptr, (X_in->M)*(X_in->N)*sizeof(double));
-  return x_out;
-}
-
-void AYmat_2_AYvec_copy(AYmat * X_in, AYvec * x_in)
-{
-  if ((X_in->M)*(X_in->N) == x_in->M) memcpy(x_in->A_ptr, X_in->A_ptr, (X_in->M)*(X_in->N)*sizeof(double));
-  else printf("AYmat: AYmat_2_AYvec_copy failed, inequal dimensions\n");
-}
-
-AYmat * AYvec_2_AYmat_gen(AYvec * x_in)
-{
-  AYmat * X_out = new AYmat((x_in->M), 1);
-  memcpy(X_out->A_ptr, x_in->A_ptr, (x_in->M)*sizeof(double));
-  return X_out;
-}
-void AYvec_2_AYmat_copy(AYvec * x_in, AYmat * X_in)
-{
-  if ((x_in->M) == (X_in->M)*(X_in->N)) memcpy(X_in->A_ptr, x_in->A_ptr, (X_in->M)*sizeof(double));
-  else printf("AYvec: AYvec_2_AYmat_copy failed, inequal dimensions\n");
-}
-
-AYmat * GSL_2_AYmat_gen(gsl_matrix * mat_in)
-{
-  AYmat * mat_out = new AYmat(mat_in->size1, mat_in->size2);
-  for (int i = 0; i < mat_out->M; i++)
-  {
-    for (int j = 0; j < mat_out->N; j++) mat_out->set(i, j, gsl_matrix_get(mat_in, i, j));
-  }
-  return mat_out;
-}
-
-AYmat * GSL_2_AYmat_gen(gsl_vector * vec_in)
-{
-  AYmat * vec_out = new AYmat(vec_in->size, 1);
-  for (int i = 0; i < vec_out->M; i++) vec_out->set(i, 0, gsl_vector_get(vec_in, i));
-  return vec_out;
-}
-
-AYmat * GSL_2_diagAYmat_gen(gsl_vector * vec_in)
-{
-  AYmat * mat_out = new AYmat(vec_in->size, vec_in->size);
-  mat_out->init_0();
-  for (int i = 0; i < mat_out->M; i++) mat_out->set(i, i, gsl_vector_get(vec_in, i));
-  return mat_out;
-}
-AYvec * GSL_2_AYvec_gen(gsl_matrix * mat_in)
-{
-  AYvec * vec_out = new AYvec((mat_in->size1)*(mat_in->size2));
-  for (int i = 0; i < mat_in->size1; i++) {for (int j = 0; j < mat_in->size2; j++) vec_out->set((i*(mat_in->size2))+j, gsl_matrix_get(mat_in, i, j));}
-  return vec_out;
-}
-AYvec * GSL_2_AYvec_gen(gsl_vector * vec_in)
-{
-  AYvec * vec_out = new AYvec(vec_in->size);
-  for (int i = 0; i < vec_out->M; i++) vec_out->set(i, gsl_vector_get(vec_in, i));
-  return vec_out;
 }
 
 char * string_gen_pruned(char * in_)

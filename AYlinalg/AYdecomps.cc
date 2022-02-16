@@ -39,10 +39,7 @@ AY_Choleskyspace::AY_Choleskyspace(int N_): N_in(N_), mat_gsl(gsl_matrix_alloc(N
 AY_Choleskyspace::~AY_Choleskyspace()
 {
   gsl_matrix_free(mat_gsl);
-  if (workspace_alloc)
-  {
-    gsl_vector_free(x_gsl);
-  }
+  if (x_gsl!=NULL) gsl_vector_free(x_gsl);
 }
 
 void AY_Choleskyspace::load_mat(AYsym * mat_)
@@ -68,7 +65,7 @@ void AY_Choleskyspace::load_mat(AYsym * mat_, double scal_)
 }
 
 void AY_Choleskyspace::Cholesky_decomp()
-{gsl_linalg_cholesky_decomp(mat_gsl);}
+{gsl_linalg_cholesky_decomp1(mat_gsl);}
 
 void AY_Choleskyspace::Cholesky_decomp(AYsym * mat_, AYsym * L_)
 {
@@ -80,7 +77,7 @@ void AY_Choleskyspace::Cholesky_decomp(AYsym * mat_, AYsym * L_)
     //possibly redundant?
     for ( j = i; j < N_in; j++) gsl_matrix_set(mat_gsl, i, j, mat_->A[i][j-i]);
   }
-  gsl_linalg_cholesky_decomp(mat_gsl);
+  gsl_linalg_cholesky_decomp1(mat_gsl);
   for ( i = 0; i < N_in; i++) // going through columns of gsl matrix
   {
     for ( j = i; j < N_in; j++) // going through the rows of gsl matrix, starting from diagonal
@@ -106,7 +103,7 @@ void AY_Choleskyspace::iCholesky_decomp(AYsym * mat_, AYsym * L_, double thresho
     }
   }
   mean = mean/((double) mat_->len);
-  gsl_linalg_cholesky_decomp(mat_gsl);
+  gsl_linalg_cholesky_decomp1(mat_gsl);
   for ( i = 0; i < N_in; i++) // going through columns of gsl matrix
   {
     j = i;
@@ -120,19 +117,19 @@ void AY_Choleskyspace::iCholesky_decomp(AYsym * mat_, AYsym * L_, double thresho
 }
 
 void AY_Choleskyspace::alloc_workspace()
-{
-  workspace_alloc = true;
-  x_gsl = gsl_vector_alloc(N_in);
-}
+{x_gsl = gsl_vector_alloc(N_in);}
+
 void AY_Choleskyspace::solve_system(AYvec * x_in)
 {
+  if (x_gsl==NULL) alloc_workspace();
   gsl_linalg_cholesky_decomp1(mat_gsl);
   gsl_linalg_cholesky_svx(mat_gsl, x_gsl);
   x_in->GSL_2_AYvec_copy(x_gsl);
 }
 void AY_Choleskyspace::solve_system(AYvec * x_in, AYvec * b_in)
 {
-  gsl_linalg_cholesky_decomp(mat_gsl);
+  if (x_gsl==NULL) alloc_workspace();   
+  gsl_linalg_cholesky_decomp1(mat_gsl);
   b_in->AYvec_2_GSL_copy(x_gsl);
   gsl_linalg_cholesky_svx(mat_gsl, x_gsl);
   x_in->GSL_2_AYvec_copy(x_gsl);

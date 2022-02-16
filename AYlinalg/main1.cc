@@ -156,9 +156,12 @@ void Cholesky_solve_test()
   AYmat sym05(M, N); sym05.init_randuni();
   AYsym sym1(N); sym1.init_sqrmat(&sym05);
   AY_Choleskyspace space(N);
+  AY_Choleskyspace space2(&sym1);
   AYsym * L_= new AYsym(N);
   AYvec * r_= new AYvec(N); r_->init_123();
   AYvec * z_= new AYvec(N);
+  AYvec x(N);
+  AYvec b(N); b.init_123();
 
   space.Cholesky_decomp(&sym1, L_);
 
@@ -182,6 +185,11 @@ void Cholesky_solve_test()
   }
   printf("z_:\n");
   z_->print_mat();
+
+  space2.solve_system(&x, &b);
+
+  printf("x:\n"); x.print_mat();
+  printf("b:\n"); b.print_mat();
 
   char name1[] = "./dat_dir/sym1";
   sym1.fprintf_sym(name1);
@@ -278,10 +286,24 @@ int main()
   // AYsym_test();
   // AYdiag_test();
   // Cholesky_test();
-  Cholesky_solve_test();
+  // Cholesky_solve_test();
   // sorting_test();
   // write_test();
   // read_test();
+
+  double v1[1], v2[1], v3[1], v4[1], v5[1], v6[1];
+  double alpha = 0.1;
+  int i = 0;
+
+  v1[i] = 1.0, v2[i] = 2.0, v3[i] = 3.0, v4[i] = 4.0, v5[i] = 5.0, v6[i] = 6.0;
+
+  printf("%f %f %f %f %f %f\n", v1[i], v2[i], v3[i], v4[i], v5[i], v6[i]);
+  double out = v3[i] = v4[i] = v5[i] = v6[i] -= alpha*v2[i];
+  printf("%f %f %f %f %f %f %f\n", out, v1[i], v2[i], v3[i], v4[i], v5[i], v6[i]);
+
+
+
+
 
   return 0;
 }
