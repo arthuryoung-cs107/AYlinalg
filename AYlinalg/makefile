@@ -6,9 +6,13 @@ CFLAGS= -O3 -I. -fopenmp -DGSL -DKNUTH
 IDIR= -I/usr/local/include/
 LINK= -L/usr/local/lib/ -lm -lgsl -lgslcblas -lfftw3 -lblas
 
-OBJS1= AYaux.o AYlinalg.o AYmat.o AYvec.o AYrng.o AYtens.o AYdecomps.o AYdata.o
+AYOBJS= AYaux.o AYlinalg.o AYmat.o AYvec.o AYrng.o AYtens.o AYdecomps.o AYdata.o
 
-OBJS2= AYaux.o AYlinalg.o AYmat.o AYvec.o AYrng.o AYtens.o AYdecomps.o AYdata.o
+SOLVEOBJS= CGIHT.o
+
+TEST1OBJS= $(AYOBJS) $(SOLVEOBJS)
+
+JUNKOBJS=
 
 %.o:%.c
 	$(CC) $(CFLAGS) $(IDIR) -c $<
@@ -16,17 +20,25 @@ OBJS2= AYaux.o AYlinalg.o AYmat.o AYvec.o AYrng.o AYtens.o AYdecomps.o AYdata.o
 %.o:%.cc
 	$(CXX) $(CFLAGS) $(IDIR) -c $<
 
-all: test1
+all: test1 scratch junk
 
-test1: main1.cc $(OBJS1)
+test1: tests1AY.cc $(AYOBJS)
 	$(CXX) $(CFLAGS) $(IDIR) -o $@ $^ $(LINK)
 
-scratch: scratch.cc $(OBJS2)
+test2: tests2AY.cc $(SOLVEOBJS)
+	$(CXX) $(CFLAGS) $(IDIR) -o $@ $^ $(LINK)
+
+scratch: scratch.cc $(AYOBJS)
+	$(CXX) $(CFLAGS) $(IDIR) -o $@ $^ $(LINK)
+
+junk: junk.cc $(JUNKOBJS)
 	$(CXX) $(CFLAGS) $(IDIR) -o $@ $^ $(LINK)
 
 clean:
 	rm -f test1
+	rm -f test2
 	rm -f scratch
+	rm -f junk
 	rm -f *.o
 clean_dat:
 	rm -f *.dat

@@ -12,13 +12,14 @@ class AYrng
 {
     public:
         AYrng();
+        AYrng(uint64_t seed_, uint64_t jump_);
         ~AYrng();
 
         uint64_t seed;
         uint64_t jump;
         uint64_t carry;
 
-        virtual void rng_init(uint64_t seed_ = 0, uint64_t jump_ = 0);
+        virtual void rng_init(uint64_t seed_=88888888, uint64_t jump_=88888888);
         virtual double rand_gen();
 };
 
@@ -28,7 +29,6 @@ class uniform : public AYrng
     double low, high;
     uniform(double low_, double high_);
     ~uniform();
-    void rng_init(uint64_t seed_, uint64_t jump_);
     double rand_gen();
 };
 
@@ -36,11 +36,8 @@ class normal : public AYrng
 {
   public:
     double mu, var;
-
     normal(double mu_, double var_);
     ~normal();
-
-    void rng_init(uint64_t seed_, uint64_t jump_);
     double rand_gen();
 };
 
@@ -50,8 +47,6 @@ class AYmat
       AYmat(int M_, int N_);
       AYmat(char * name);
       AYmat(const char * name): AYmat((char*) name) {}
-      AYmat(gsl_matrix * m_);
-      AYmat(gsl_vector * m_);
       AYmat();
       ~AYmat();
 
@@ -143,9 +138,6 @@ class AYvec : public AYmat
   public:
     AYvec(int M_);
     AYvec(char * name_);
-    AYvec(AYmat * m_);
-    AYvec(gsl_matrix * m_);
-    AYvec(gsl_vector * v_);
     AYvec(const char * name): AYvec((char*)name) {}
 
     ~AYvec();
@@ -295,24 +287,34 @@ class AY_Choleskyspace
       ~AY_Choleskyspace();
 
       gsl_matrix * mat_gsl;
-      gsl_vector * x_gsl;
-
-      bool workspace_alloc = false;
+      gsl_vector * x_gsl=NULL;
 
       int N_in;
       void load_mat(AYsym * mat_);
       void load_mat(AYsym * mat_, double scal_);
       void Cholesky_decomp();
       void Cholesky_decomp(AYsym * mat_, AYsym * L_);
-      void iCholesky_decomp(AYsym * mat_, AYsym * L_, double frac_ = 0.1);
+      void iCholesky_decomp(AYsym * mat_, AYsym * L_, double threshold_ = 0.01);
       void unpack(AYsym * L_);
       void alloc_workspace();
       void solve_system(AYvec* x_in, AYvec * b_in);
+      void solve_system(AYsym * A_, AYvec* x_in, AYvec * b_in);
       void solve_system(AYvec* x_in);
 };
 
 void AYlinalg_svd(AYmat * mat_, AY_SVDspace * space_);
 void AYlinalg_Cholesky_solve(AYsym * L_, AYvec *z_, AYvec * r_ );
+
+AYvec * AYmat_2_AYvec_gen(AYmat * X_in);
+void AYmat_2_AYvec_copy(AYmat * X_in, AYvec * x_in);
+AYmat * AYvec_2_AYmat_gen(AYvec * x_in);
+void AYvec_2_AYmat_copy(AYvec * x_in, AYmat * X_in);
+
+AYvec * GSL_2_AYvec_gen(gsl_matrix * mat_in);
+AYvec * GSL_2_AYvec_gen(gsl_vector * vec_in);
+AYmat * GSL_2_AYmat_gen(gsl_matrix * mat_in);
+AYmat * GSL_2_AYmat_gen(gsl_vector * vec_in);
+AYmat * GSL_2_diagAYmat_gen(gsl_vector * vec_in);
 
 char * string_gen_pruned(char * in_);
 char * string_gen_pruned(const char * in_);

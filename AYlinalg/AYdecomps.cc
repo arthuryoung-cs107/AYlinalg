@@ -39,10 +39,7 @@ AY_Choleskyspace::AY_Choleskyspace(int N_): N_in(N_), mat_gsl(gsl_matrix_alloc(N
 AY_Choleskyspace::~AY_Choleskyspace()
 {
   gsl_matrix_free(mat_gsl);
-  if (workspace_alloc)
-  {
-    gsl_vector_free(x_gsl);
-  }
+  if (x_gsl!=NULL) gsl_vector_free(x_gsl);
 }
 
 void AY_Choleskyspace::load_mat(AYsym * mat_)
@@ -68,7 +65,7 @@ void AY_Choleskyspace::load_mat(AYsym * mat_, double scal_)
 }
 
 void AY_Choleskyspace::Cholesky_decomp()
-{gsl_linalg_cholesky_decomp(mat_gsl);}
+{gsl_linalg_cholesky_decomp1(mat_gsl);}
 
 void AY_Choleskyspace::Cholesky_decomp(AYsym * mat_, AYsym * L_)
 {
@@ -80,7 +77,7 @@ void AY_Choleskyspace::Cholesky_decomp(AYsym * mat_, AYsym * L_)
     //possibly redundant?
     for ( j = i; j < N_in; j++) gsl_matrix_set(mat_gsl, i, j, mat_->A[i][j-i]);
   }
-  gsl_linalg_cholesky_decomp(mat_gsl);
+  gsl_linalg_cholesky_decomp1(mat_gsl);
   for ( i = 0; i < N_in; i++) // going through columns of gsl matrix
   {
     for ( j = i; j < N_in; j++) // going through the rows of gsl matrix, starting from diagonal
@@ -92,51 +89,65 @@ void AY_Choleskyspace::Cholesky_decomp(AYsym * mat_, AYsym * L_)
 
 void AY_Choleskyspace::iCholesky_decomp(AYsym * mat_, AYsym * L_, double frac_)
 {
-  int i,j;
-  double mean_mag=0.0, mag_min=DBL_MAX;
-  for ( i = 0; i < N_in; i++)
-  {
-    //lower diagonal components and diagonal only, exploiting gsl technique
-    for ( j = 0; j < i; j++) gsl_matrix_set(mat_gsl, i, j, mat_->A[j][i-j]);
-    //possibly redundant?
-    for ( j = i; j < N_in; j++)
+  bool debug = true;
+  if (debug) Cholesky_decomp(mat_, L_);
+  else
+  {  int i,j;
+    double mag_mean=0.0, mag_min = DBL_MAX, mag_max = 0.0;
+    for ( i = 0; i < N_in; i++)
     {
-      gsl_matrix_set(mat_gsl, i, j, mat_->A[i][j-i]);
-      double mag = abs(mat_->A[i][j-i]);
-      mean_mag += mag;
-      if (mag < mag_min) mag_min = mag;
+      //lower diagonal components and diagonal only, exploiting gsl technique
+      for ( j = 0; j < i; j++) gsl_matrix_set(mat_gsl, i, j, mat_->A[j][i-j]);
+      //possibly redundant?
+      for ( j = i; j < N_in; j++)
+      {
+        gsl_matrix_set(mat_gsl, i, j, mat_->A[i][j-i]);
+        double mag = abs(mat_->A[i][j-i]);
+        mag_mean += mag;
+        if (mag < mag_min) mag_min = mag;
+        if (mag > mag_max) mag_max = mag;
+      }
     }
-  }
-  mean_mag = mean_mag/((double) mat_->len);
-  double thresh = mag_min + (frac_*(mean_mag-mag_min));
-  gsl_linalg_cholesky_decomp(mat_gsl); // this can still potentially fail, would it be better to sparsify original matrix?
-  for ( i = 0; i < N_in; i++) // going through columns of gsl matrix
-  {
-    j = i;
-    double val = gsl_matrix_get(mat_gsl, j, i);
-    L_->A[i][j-i] = (abs(val) < thresh) ? 0.0 : val;
-    for ( j = i+1; j < N_in; j++) // going through the rows of gsl matrix,
+    mag_mean = mag_mean/((double) mat_->len);
+    double thresh = mag_min + frac_*(mag_mean-mag_min);
+    gsl_linalg_cholesky_decomp1(mat_gsl);
+    int count  = 0;
+    for ( i = 0; i < N_in; i++) // going through columns of gsl matrix
     {
-      val = gsl_matrix_get(mat_gsl, j, i);
-      L_->A[i][j-i] = (abs(val) < thresh) ? 0.0 : val;
+      j = i;
+      L_->A[i][j-i] = gsl_matrix_get(mat_gsl, j, i);
+      for ( j = i+1; j < N_in; j++) // going through the rows of gsl matrix,
+      {
+        if (abs(mat_->A[i][j-i]) < thresh) L_->A[i][j-i] = 0.0; // comparing to the average value
+        else L_->A[i][j-i] = gsl_matrix_get(mat_gsl, j, i);
+      }
     }
   }
 }
 
 void AY_Choleskyspace::alloc_workspace()
-{
-  workspace_alloc = true;
-  x_gsl = gsl_vector_alloc(N_in);
-}
+{x_gsl = gsl_vector_alloc(N_in);}
+
 void AY_Choleskyspace::solve_system(AYvec * x_in)
 {
+  if (x_gsl==NULL) alloc_workspace();
   gsl_linalg_cholesky_decomp1(mat_gsl);
   gsl_linalg_cholesky_svx(mat_gsl, x_gsl);
   x_in->GSL_2_AYvec_copy(x_gsl);
 }
 void AY_Choleskyspace::solve_system(AYvec * x_in, AYvec * b_in)
 {
-  gsl_linalg_cholesky_decomp(mat_gsl);
+  if (x_gsl==NULL) alloc_workspace();
+  gsl_linalg_cholesky_decomp1(mat_gsl);
+  b_in->AYvec_2_GSL_copy(x_gsl);
+  gsl_linalg_cholesky_svx(mat_gsl, x_gsl);
+  x_in->GSL_2_AYvec_copy(x_gsl);
+}
+void AY_Choleskyspace::solve_system(AYsym * A_, AYvec * x_in, AYvec * b_in)
+{
+  if (x_gsl==NULL) alloc_workspace();
+  load_mat(A_); 
+  gsl_linalg_cholesky_decomp1(mat_gsl);
   b_in->AYvec_2_GSL_copy(x_gsl);
   gsl_linalg_cholesky_svx(mat_gsl, x_gsl);
   x_in->GSL_2_AYvec_copy(x_gsl);

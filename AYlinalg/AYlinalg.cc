@@ -149,9 +149,9 @@ double AYsym::vT_A_v(AYvec * v, AYvec * w)
       for (int j = 1; j < (N - i); j++)
       {
         w->A_ptr[i] += A[i][j]*v->A_ptr[i+j];
-        w->A_ptr[i+j] += A[i][j]*v->A_ptr[i];
+        w->A_ptr[i+j] += A[i][j]*v->A_ptr[i]; // only updates the vector DOWNSTREAM
       }
-      out += (w->A_ptr[i])*(v->A_ptr[i]); // actively updating the inner product
+      out += (w->A_ptr[i])*(v->A_ptr[i]); // actively updating the inner product. w is already fully calculated by this point
     }
   }
   else printf("AYsym: vT_A_v error, dimensions are (%d %d)(%d %d) = (%d %d)\n", N, N, v->M, v->N, w->M, w->N);

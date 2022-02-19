@@ -10,17 +10,6 @@ extern "C"
 
 AYvec::AYvec(int M_): AYmat(M_, 1) {}
 AYvec::AYvec(char * name): AYmat(name) {}
-AYvec::AYvec(AYmat * m_): AYvec((m_->M)*(m_->N))
-{memcpy(A_ptr, m_->A_ptr, (size_t)(M*N*sizeof(double)));}
-AYvec::AYvec(gsl_matrix * m_): AYvec((m_->size1)*(m_->size2))
-{
-  // note that this follows GSL's row major
-  for (int i = 0; i < m_->size1; i++) for (int j = 0; j < m_->size2; j++) A_ptr[i*(m_->size2)+j] = gsl_matrix_get(m_, i, j);
-}
-AYvec::AYvec(gsl_vector * v_): AYvec(v_->size)
-{
-  for (int i = 0; i < v_->size; i++) A_ptr[i] = gsl_vector_get(v_, i);
-}
 
 AYvec::~AYvec() {}
 
