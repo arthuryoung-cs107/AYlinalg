@@ -73,7 +73,7 @@ void CGIHT::solve_CG(AY_Choleskyspace * space, AYvec * x0, AYvec * x_final, bool
   AYvec zk(N);
   AYsym L(N);
 
-  space->iCholesky_decomp(A, &L);
+  space->iCholesky_decomp(A, &L, precond_thresh);
 
   for (int i = 0; i < N; i++)
   {
@@ -82,7 +82,7 @@ void CGIHT::solve_CG(AY_Choleskyspace * space, AYvec * x0, AYvec * x_final, bool
   }
   A->mult_vec(&xk, &rk, true); // initialize residual
   AYlinalg_Cholesky_solve(&L, &zk, &rk); // initialize zk
-
+  inner_rz=rk.inner(&zk);
   CG_cond0 = l2_rk = rk.norm_2(); beta = 0.0; CG_count = 0;
   do
   {
@@ -170,7 +170,7 @@ void CGIHT::solve_CGIHT(int k_, AYvec * x0, AYvec * x_final, bool verbose_)
     i_small = wk.max_mag_elements(&tk, Tk);
     proj_T(&xk, &tk, Tk, false);
     A->mult_vec(&xk, &rk, true); // new residual
-    l2_rk = rk.norm_2(); CG_cond = l2_rk; // error criterion
+    CG_cond = l2_rk = rk.norm_2(); // error criterion
 
     if ((CG_cond < CG_tol) || (++CG_count >= CG_max)) CG_cont = false;
     verbose_CG();
@@ -196,7 +196,7 @@ void CGIHT::solve_CGIHT(int k_, AY_Choleskyspace * space, AYvec * x0, AYvec * x_
   AYvec zk(N), zk_old(N);
   AYsym L(N);
 
-  space->iCholesky_decomp(A, &L);
+  space->iCholesky_decomp(A, &L, precond_thresh);
 
   int *Tk = new int[k], *Tk_old = new int[k];
   int i_small;
@@ -249,8 +249,7 @@ void CGIHT::solve_CGIHT(int k_, AY_Choleskyspace * space, AYvec * x0, AYvec * x_
     i_small = wk.max_mag_elements(&tk, Tk);
     proj_T(&xk, &tk, Tk, false);
     A->mult_vec(&xk, &rk, true); // new residual
-    l2_rk = M_inv(&L, &zk, &rk, &zk_old);
-    CG_cond = l2_rk; // error criterion
+    CG_cond = l2_rk = M_inv(&L, &zk, &rk, &zk_old);
 
     if ((CG_cond < CG_tol) || (++CG_count >= CG_max)) CG_cont = false;
     verbose_CG();

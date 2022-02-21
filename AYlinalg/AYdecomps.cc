@@ -49,7 +49,6 @@ void AY_Choleskyspace::load_mat(AYsym * mat_)
   {
     //lower diagonal components and diagonal only, exploiting gsl technique
     for ( j = 0; j < i; j++) gsl_matrix_set(mat_gsl, i, j, mat_->A[j][i-j]);
-    //possibly redundant?
     for ( j = i; j < N_in; j++) gsl_matrix_set(mat_gsl, i, j, mat_->A[i][j-i]);
   }
 }
@@ -59,7 +58,6 @@ void AY_Choleskyspace::load_mat(AYsym * mat_, double scal_)
   {
     //lower diagonal components and diagonal only, exploiting gsl technique
     for (int j = 0; j < i; j++) gsl_matrix_set(mat_gsl, i, j, scal_*mat_->A[j][i-j]);
-    //possibly redundant?
     for (int j = i; j < N_in; j++) gsl_matrix_set(mat_gsl, i, j, scal_*mat_->A[i][j-i]);
   }
 }
@@ -74,55 +72,42 @@ void AY_Choleskyspace::Cholesky_decomp(AYsym * mat_, AYsym * L_)
   {
     //lower diagonal components and diagonal only, exploiting gsl technique
     for ( j = 0; j < i; j++) gsl_matrix_set(mat_gsl, i, j, mat_->A[j][i-j]);
-    //possibly redundant?
     for ( j = i; j < N_in; j++) gsl_matrix_set(mat_gsl, i, j, mat_->A[i][j-i]);
+  }
+  gsl_linalg_cholesky_decomp1(mat_gsl);
+  for ( i = 0; i < N_in; i++) for ( j = i; j < N_in; j++) L_->A[i][j-i] = gsl_matrix_get(mat_gsl, j, i);
+}
+
+void AY_Choleskyspace::iCholesky_decomp(AYsym * mat_, AYsym * L_, double threshold_)
+{
+  int i,j;
+  double * l1_thresh = new double[N_in];
+  for ( i = 0; i < N_in; i++)
+  {
+    l1_thresh[i] = 0.0;
+    for ( j = 0; j < i; j++)
+    {
+      gsl_matrix_set(mat_gsl, i, j, mat_->A[j][i-j]);
+      l1_thresh[i]+=abs(mat_->A[j][i-j]);
+    }
+    j = i;
+    gsl_matrix_set(mat_gsl, i, j, mat_->A[i][j-i]);
+    for ( j = i+1; j < N_in; j++)
+    {
+      gsl_matrix_set(mat_gsl, i, j, mat_->A[i][j-i]);
+      l1_thresh[i]+=abs(mat_->A[i][j-i]);
+    }
+    l1_thresh[i] /= (double)(N_in-1);
+    l1_thresh[i] *= threshold_;
   }
   gsl_linalg_cholesky_decomp1(mat_gsl);
   for ( i = 0; i < N_in; i++) // going through columns of gsl matrix
   {
-    for ( j = i; j < N_in; j++) // going through the rows of gsl matrix, starting from diagonal
-    {
-      L_->A[i][j-i] = gsl_matrix_get(mat_gsl, j, i);
-    }
+    j = i;
+    L_->A[i][j-i] = gsl_matrix_get(mat_gsl, j, i);
+    for ( j = i+1; j < N_in; j++) L_->A[i][j-i] = ((abs(mat_->A[i][j-i])) < l1_thresh[i]) ? 0.0 : gsl_matrix_get(mat_gsl, j, i);
   }
-}
-
-void AY_Choleskyspace::iCholesky_decomp(AYsym * mat_, AYsym * L_, double frac_)
-{
-  bool debug = true;
-  if (debug) Cholesky_decomp(mat_, L_);
-  else
-  {  int i,j;
-    double mag_mean=0.0, mag_min = DBL_MAX, mag_max = 0.0;
-    for ( i = 0; i < N_in; i++)
-    {
-      //lower diagonal components and diagonal only, exploiting gsl technique
-      for ( j = 0; j < i; j++) gsl_matrix_set(mat_gsl, i, j, mat_->A[j][i-j]);
-      //possibly redundant?
-      for ( j = i; j < N_in; j++)
-      {
-        gsl_matrix_set(mat_gsl, i, j, mat_->A[i][j-i]);
-        double mag = abs(mat_->A[i][j-i]);
-        mag_mean += mag;
-        if (mag < mag_min) mag_min = mag;
-        if (mag > mag_max) mag_max = mag;
-      }
-    }
-    mag_mean = mag_mean/((double) mat_->len);
-    double thresh = mag_min + frac_*(mag_mean-mag_min);
-    gsl_linalg_cholesky_decomp1(mat_gsl);
-    int count  = 0;
-    for ( i = 0; i < N_in; i++) // going through columns of gsl matrix
-    {
-      j = i;
-      L_->A[i][j-i] = gsl_matrix_get(mat_gsl, j, i);
-      for ( j = i+1; j < N_in; j++) // going through the rows of gsl matrix,
-      {
-        if (abs(mat_->A[i][j-i]) < thresh) L_->A[i][j-i] = 0.0; // comparing to the average value
-        else L_->A[i][j-i] = gsl_matrix_get(mat_gsl, j, i);
-      }
-    }
-  }
+  delete l1_thresh;
 }
 
 void AY_Choleskyspace::alloc_workspace()
@@ -146,7 +131,7 @@ void AY_Choleskyspace::solve_system(AYvec * x_in, AYvec * b_in)
 void AY_Choleskyspace::solve_system(AYsym * A_, AYvec * x_in, AYvec * b_in)
 {
   if (x_gsl==NULL) alloc_workspace();
-  load_mat(A_); 
+  load_mat(A_);
   gsl_linalg_cholesky_decomp1(mat_gsl);
   b_in->AYvec_2_GSL_copy(x_gsl);
   gsl_linalg_cholesky_svx(mat_gsl, x_gsl);

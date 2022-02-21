@@ -4,7 +4,6 @@
 #include "omp.h"
 
 #include "AYlinalg.hh"
-#include "data_cloud.hh"
 
 class CGIHT
 {
@@ -13,7 +12,7 @@ class CGIHT
     ~CGIHT();
 
     int N, CG_max=0, verbose_capped=0, CG_max_mult=100, CG_count, CG_verbose_div = 1;
-    double CG_cond, CG_conv, CG_tol=1.0e-12, alpha, beta;
+    double CG_cond, CG_conv, CG_tol=1.0e-11, precond_thresh=1e-1, alpha, beta;
 
     AYsym * A;
     AYvec * b;

@@ -10,7 +10,9 @@ AYOBJS= AYaux.o AYlinalg.o AYmat.o AYvec.o AYrng.o AYtens.o AYdecomps.o AYdata.o
 
 SOLVEOBJS= CGIHT.o
 
-TEST1OBJS= $(AYOBJS) $(SOLVEOBJS)
+TEST1OBJS= $(AYOBJS)
+
+TEST2OBJS= $(AYOBJS) $(SOLVEOBJS)
 
 JUNKOBJS=
 
@@ -20,12 +22,12 @@ JUNKOBJS=
 %.o:%.cc
 	$(CXX) $(CFLAGS) $(IDIR) -c $<
 
-all: test1 scratch junk
+all: test1 test2 scratch junk
 
-test1: tests1AY.cc $(AYOBJS)
+test1: tests1AY.cc $(TEST1OBJS)
 	$(CXX) $(CFLAGS) $(IDIR) -o $@ $^ $(LINK)
 
-test2: tests2AY.cc $(SOLVEOBJS)
+test2: tests2AY.cc $(TEST2OBJS)
 	$(CXX) $(CFLAGS) $(IDIR) -o $@ $^ $(LINK)
 
 scratch: scratch.cc $(AYOBJS)

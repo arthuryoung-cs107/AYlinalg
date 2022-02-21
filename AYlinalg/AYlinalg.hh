@@ -16,10 +16,10 @@ class AYrng
         ~AYrng();
 
         uint64_t seed;
-        uint64_t jump;
+        uint64_t jump=100;
         uint64_t carry;
 
-        virtual void rng_init(uint64_t seed_=88888888, uint64_t jump_=88888888);
+        virtual void rng_init(uint64_t seed_=8e15, uint64_t jump_=100);
         virtual double rand_gen();
 };
 
@@ -27,7 +27,7 @@ class uniform : public AYrng
 {
   public:
     double low, high;
-    uniform(double low_, double high_);
+    uniform(double low_=0.0, double high_=1.0);
     ~uniform();
     double rand_gen();
 };
@@ -36,7 +36,7 @@ class normal : public AYrng
 {
   public:
     double mu, var;
-    normal(double mu_, double var_);
+    normal(double mu_=0.0, double var_=1.0);
     ~normal();
     double rand_gen();
 };
@@ -69,6 +69,8 @@ class AYmat
       void AYmat_2_GSL_copy(gsl_vector * vec_in);
 
       void print_mat(bool space_ = true);
+      void print_mat(char * name_, bool space_ = true) {printf("%s\n", name_); print_mat(space_);};
+      void print_mat(const char * name_, bool space_ = true) {print_mat((char *) name_, space_);};
       void print_dims();
       void fprintf_mat(char name[], bool verbose = false);
       void fprintf_mat(const char name[], bool verbose = false) {fprintf_mat((char*) name, verbose);}
@@ -101,6 +103,7 @@ class AYmat
 
       double inner(AYmat *B);
       double norm_frob();
+      double norm_frob(AYmat * X_);
       double norm_1();
       double max_val_mag();
       double max_val_mag(int * index, int start_index=0);
@@ -150,7 +153,9 @@ class AYvec : public AYmat
     void AYvec_2_GSL_copy(gsl_matrix * mat_in);
     void AYvec_2_GSL_copy(gsl_vector * vec_in);
 
-    void print_vec(bool space_ = true);
+    void print_vec(bool space_ = true) {print_mat(space_);};
+    void print_vec(char * name_ ,bool space_ = true) {printf("%s\n", name_); print_vec(space_);}
+    void print_vec(const char * name_ ,bool space_ = true) {print_vec((char*)name_, space_);}
     void fprintf_vec(char * name_, bool space_ = true);
     void fprintf_vec(const char * name_, bool space_ = true) {fprintf_vec((char*) name_, space_);}
 
@@ -159,7 +164,8 @@ class AYvec : public AYmat
     AYvec * col_slice_gen(int j_);
     AYmat * transpose_gen();
 
-    double norm_2();
+    double norm_2() {return norm_frob();}
+    double norm_2(AYvec * x_) {return norm_frob(x_);}
     double dot(AYmat *B_);
     void svd(gsl_vector *S, gsl_matrix *V, gsl_vector *work);
     void svd_check();
@@ -237,6 +243,8 @@ class AYsym
     ~AYsym();
 
     void print_mat(bool space_ = true);
+    void print_mat(char * name_, bool space_ = true) {printf("%s\n", name_); print_mat(space_);}
+    void print_mat(const char * name_, bool space_ = true) {print_mat((char*)name_, space_);}
     void fprintf_sym(char name[], bool verbose_=false);
     void fprintf_sym(const char name[], bool verbose_=false) {fprintf_sym((char*)name, verbose_);}
     void init_eye();
@@ -294,7 +302,7 @@ class AY_Choleskyspace
       void load_mat(AYsym * mat_, double scal_);
       void Cholesky_decomp();
       void Cholesky_decomp(AYsym * mat_, AYsym * L_);
-      void iCholesky_decomp(AYsym * mat_, AYsym * L_, double threshold_ = 0.01);
+      void iCholesky_decomp(AYsym * mat_, AYsym * L_, double threshold_ = 1e-1);
       void unpack(AYsym * L_);
       void alloc_workspace();
       void solve_system(AYvec* x_in, AYvec * b_in);
