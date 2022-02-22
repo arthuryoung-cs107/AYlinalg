@@ -11,19 +11,19 @@ class CGIHT
     CGIHT(AYsym * A_, AYvec * b_);
     ~CGIHT();
 
-    int N, CG_max=0, verbose_capped=0, CG_max_mult=100, CG_count, CG_verbose_div = 1;
+    int N, CG_max=0, verbose_capped=0, CG_max_mult=100, CG_count, CG_verbose_div = 1, linear_solver=0;
     double CG_cond, CG_conv, CG_tol=1.0e-11, precond_thresh=1e-1, alpha, beta;
 
     AYsym * A;
     AYvec * b;
-    bool verbose=false, verbose_done_flag = true, precond_flag=false, restart_flag = true;
+    bool verbose_flag, verbose_done_flag, precond_flag, restart_flag = true;
     virtual void init(double CG_tol_, int CG_max_mult_);
 
-    virtual void solve_CG(AYvec * x0, AYvec * x_final, bool verbose_ = false);
-    virtual void solve_CG(AY_Choleskyspace * space_, AYvec * x0, AYvec * x_final, bool verbose_ = false);
+    virtual void solve_CG(AYvec * x0, AYvec * x_final, bool verbose_ = false, bool verbose_done_ = true );
+    virtual void solve_CG(AY_Choleskyspace * space_, AYvec * x0, AYvec * x_final, bool verbose_ = false, bool verbose_done_ = true);
 
-    virtual void solve_CGIHT(int k_, AYvec * x0, AYvec * x_final, bool verbose_ = false);
-    virtual void solve_CGIHT(int k_, AY_Choleskyspace * space_, AYvec * x0, AYvec * x_final, bool verbose_ = false);
+    virtual void solve_CGIHT(int k_, AYvec * x0, AYvec * x_final, bool verbose_ = false, bool verbose_done_ = true);
+    virtual void solve_CGIHT(int k_, AY_Choleskyspace * space_, AYvec * x0, AYvec * x_final, bool verbose_ = false, bool verbose_done_=true);
   protected:
     virtual void verbose_CG();
     virtual void verbose_CGIHT();

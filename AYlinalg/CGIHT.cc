@@ -11,9 +11,9 @@ CGIHT::~CGIHT()
 {}
 void CGIHT::init(double CG_tol_, int CG_max_mult_)
 {CG_tol = CG_tol_; CG_max_mult = CG_max_mult_;}
-void CGIHT::solve_CG(AYvec * x0, AYvec * x_final, bool verbose_)
+void CGIHT::solve_CG(AYvec * x0, AYvec * x_final, bool verbose_flag_, bool verbose_done_flag_)
 {
-  verbose = verbose_; precond_flag = false;
+  verbose_flag = verbose_flag_; verbose_done_flag = verbose_done_flag_, precond_flag = false;
   CG_max = (CG_max==0) ? CG_max_mult*N : CG_max;
   if (verbose_capped) CG_verbose_div  = (int)(CG_max/verbose_capped);
   bool CG_cont=true;
@@ -60,9 +60,9 @@ void CGIHT::solve_CG(AYvec * x0, AYvec * x_final, bool verbose_)
   xk.copy_set(x_final);
   verbose_done();
 }
-void CGIHT::solve_CG(AY_Choleskyspace * space, AYvec * x0, AYvec * x_final, bool verbose_)
+void CGIHT::solve_CG(AY_Choleskyspace * space, AYvec * x0, AYvec * x_final, bool verbose_flag_, bool verbose_done_flag_)
 {
-  verbose = verbose_; precond_flag = true;
+  verbose_flag = verbose_flag_; verbose_done_flag = verbose_done_flag_; precond_flag = true;
   CG_max = (CG_max==0) ? CG_max_mult*N : CG_max;
   if (verbose_capped) CG_verbose_div = (int)(CG_max/verbose_capped);
   bool CG_cont=true;
@@ -112,9 +112,9 @@ void CGIHT::solve_CG(AY_Choleskyspace * space, AYvec * x0, AYvec * x_final, bool
   verbose_done();
 }
 
-void CGIHT::solve_CGIHT(int k_, AYvec * x0, AYvec * x_final, bool verbose_)
+void CGIHT::solve_CGIHT(int k_, AYvec * x0, AYvec * x_final, bool verbose_flag_, bool verbose_done_flag_)
 {
-  verbose = verbose_; precond_flag = false;
+  verbose_flag = verbose_flag_; verbose_done_flag=verbose_done_flag_; precond_flag = false;
   CG_max = (CG_max==0) ? CG_max_mult*N : CG_max;
   if (verbose_capped) CG_verbose_div = (int)(CG_max/verbose_capped);
   bool CG_cont=true;
@@ -181,9 +181,9 @@ void CGIHT::solve_CGIHT(int k_, AYvec * x0, AYvec * x_final, bool verbose_)
   delete Tk_old;
 }
 
-void CGIHT::solve_CGIHT(int k_, AY_Choleskyspace * space, AYvec * x0, AYvec * x_final, bool verbose_)
+void CGIHT::solve_CGIHT(int k_, AY_Choleskyspace * space, AYvec * x0, AYvec * x_final, bool verbose_flag_, bool verbose_done_flag_)
 {
-  verbose = verbose_; precond_flag = true;
+  verbose_flag = verbose_flag_; verbose_done_flag = verbose_done_flag_; precond_flag = true;
   CG_max = (CG_max==0) ? CG_max_mult*N : CG_max;
   if (verbose_capped) CG_verbose_div = (int)(CG_max/verbose_capped);
   bool CG_cont=true;
@@ -344,7 +344,7 @@ void CGIHT::verbose_done()
 }
 
 void CGIHT::verbose_CG()
-{ if (verbose && ((CG_count % CG_verbose_div) == 0) ) printf("        (thread %d of %d) CG: CG_count: %d of %d, beta = %e, err = %e, convergence: %f%% \n", omp_get_thread_num(), omp_get_max_threads(), CG_count, CG_max, beta, CG_cond, 100.0*CG_tol/CG_cond); }
+{ if (verbose_flag && ((CG_count % CG_verbose_div) == 0) ) printf("        (thread %d of %d) CG: CG_count: %d of %d, beta = %e, err = %e, convergence: %f%% \n", omp_get_thread_num(), omp_get_max_threads(), CG_count, CG_max, beta, CG_cond, 100.0*CG_tol/CG_cond); }
 
 void CGIHT::verbose_CGIHT()
-{ if (verbose && ((CG_count % CG_verbose_div) == 0) ) printf("        (thread %d of %d) CGIHT: CG_count: %d of %d, beta = %e, err = %e, convergence: %f%% \n", omp_get_thread_num(), omp_get_max_threads(), CG_count, CG_max, beta, CG_cond, 100.0*CG_tol/CG_cond); }
+{ if (verbose_flag && ((CG_count % CG_verbose_div) == 0) ) printf("        (thread %d of %d) CGIHT: CG_count: %d of %d, beta = %e, err = %e, convergence: %f%% \n", omp_get_thread_num(), omp_get_max_threads(), CG_count, CG_max, beta, CG_cond, 100.0*CG_tol/CG_cond); }
