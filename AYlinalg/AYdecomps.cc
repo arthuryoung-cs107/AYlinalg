@@ -49,7 +49,6 @@ void AY_Choleskyspace::load_mat(AYsym * mat_)
   {
     //lower diagonal components and diagonal only, exploiting gsl technique
     for ( j = 0; j < i; j++) gsl_matrix_set(mat_gsl, i, j, mat_->A[j][i-j]);
-    //possibly redundant?
     for ( j = i; j < N_in; j++) gsl_matrix_set(mat_gsl, i, j, mat_->A[i][j-i]);
   }
 }
@@ -59,7 +58,6 @@ void AY_Choleskyspace::load_mat(AYsym * mat_, double scal_)
   {
     //lower diagonal components and diagonal only, exploiting gsl technique
     for (int j = 0; j < i; j++) gsl_matrix_set(mat_gsl, i, j, scal_*mat_->A[j][i-j]);
-    //possibly redundant?
     for (int j = i; j < N_in; j++) gsl_matrix_set(mat_gsl, i, j, scal_*mat_->A[i][j-i]);
   }
 }
@@ -74,46 +72,42 @@ void AY_Choleskyspace::Cholesky_decomp(AYsym * mat_, AYsym * L_)
   {
     //lower diagonal components and diagonal only, exploiting gsl technique
     for ( j = 0; j < i; j++) gsl_matrix_set(mat_gsl, i, j, mat_->A[j][i-j]);
-    //possibly redundant?
     for ( j = i; j < N_in; j++) gsl_matrix_set(mat_gsl, i, j, mat_->A[i][j-i]);
   }
   gsl_linalg_cholesky_decomp1(mat_gsl);
-  for ( i = 0; i < N_in; i++) // going through columns of gsl matrix
-  {
-    for ( j = i; j < N_in; j++) // going through the rows of gsl matrix, starting from diagonal
-    {
-      L_->A[i][j-i] = gsl_matrix_get(mat_gsl, j, i);
-    }
-  }
+  for ( i = 0; i < N_in; i++) for ( j = i; j < N_in; j++) L_->A[i][j-i] = gsl_matrix_get(mat_gsl, j, i);
 }
 
 void AY_Choleskyspace::iCholesky_decomp(AYsym * mat_, AYsym * L_, double threshold_)
 {
   int i,j;
-  double mean=0.0;
+  double * l1_thresh = new double[N_in];
   for ( i = 0; i < N_in; i++)
   {
-    //lower diagonal components and diagonal only, exploiting gsl technique
-    for ( j = 0; j < i; j++) gsl_matrix_set(mat_gsl, i, j, mat_->A[j][i-j]);
-    //possibly redundant?
-    for ( j = i; j < N_in; j++)
+    l1_thresh[i] = 0.0;
+    for ( j = 0; j < i; j++)
+    {
+      gsl_matrix_set(mat_gsl, i, j, mat_->A[j][i-j]);
+      l1_thresh[i]+=abs(mat_->A[j][i-j]);
+    }
+    j = i;
+    gsl_matrix_set(mat_gsl, i, j, mat_->A[i][j-i]);
+    for ( j = i+1; j < N_in; j++)
     {
       gsl_matrix_set(mat_gsl, i, j, mat_->A[i][j-i]);
-      mean +=  mat_->A[i][j-i];
+      l1_thresh[i]+=abs(mat_->A[i][j-i]);
     }
+    l1_thresh[i] /= (double)(N_in-1);
+    l1_thresh[i] *= threshold_;
   }
-  mean = mean/((double) mat_->len);
   gsl_linalg_cholesky_decomp1(mat_gsl);
   for ( i = 0; i < N_in; i++) // going through columns of gsl matrix
   {
     j = i;
     L_->A[i][j-i] = gsl_matrix_get(mat_gsl, j, i);
-    for ( j = i+1; j < N_in; j++) // going through the rows of gsl matrix,
-    {
-      if ((mat_->A[i][j-i]) < threshold_*mean) L_->A[i][j-i] = 0.0; // comparing to the average value
-      else L_->A[i][j-i] = gsl_matrix_get(mat_gsl, j, i);
-    }
+    for ( j = i+1; j < N_in; j++) L_->A[i][j-i] = ((abs(mat_->A[i][j-i])) < l1_thresh[i]) ? 0.0 : gsl_matrix_get(mat_gsl, j, i);
   }
+  delete l1_thresh;
 }
 
 void AY_Choleskyspace::alloc_workspace()
@@ -128,7 +122,16 @@ void AY_Choleskyspace::solve_system(AYvec * x_in)
 }
 void AY_Choleskyspace::solve_system(AYvec * x_in, AYvec * b_in)
 {
-  if (x_gsl==NULL) alloc_workspace();   
+  if (x_gsl==NULL) alloc_workspace();
+  gsl_linalg_cholesky_decomp1(mat_gsl);
+  b_in->AYvec_2_GSL_copy(x_gsl);
+  gsl_linalg_cholesky_svx(mat_gsl, x_gsl);
+  x_in->GSL_2_AYvec_copy(x_gsl);
+}
+void AY_Choleskyspace::solve_system(AYsym * A_, AYvec * x_in, AYvec * b_in)
+{
+  if (x_gsl==NULL) alloc_workspace();
+  load_mat(A_);
   gsl_linalg_cholesky_decomp1(mat_gsl);
   b_in->AYvec_2_GSL_copy(x_gsl);
   gsl_linalg_cholesky_svx(mat_gsl, x_gsl);
