@@ -1,16 +1,34 @@
 classdef AYfig < handle
   properties
     fig;
+    ax;
     props_in;
+
+
+    %% movie stuff
+    movie_gen;
   end
-  methods(Static)
+  methods
     function obj = AYfig(props_in_)
       obj.fig = figure;
+      obj.ax = gca;
       obj.props_in = props_in_;
       for i=1:size(props_in_, 1)
         obj.fig.set(props_in_{i, 1}, props_in_{i, 2});
       end
     end
+    function init_movie(obj, Frames_)
+      str(Frames_) = struct('cdata', [], 'colormap', []);
+      obj.movie_gen = str;
+      obj.ax.NextPlot = 'replaceChildren';
+      % obj.fig.Visible = 'off';
+    end
+    function play_movie(obj)
+      obj.fig.Visible = 'on';
+      movie(obj.ax, obj.movie_gen);
+    end
+  end
+  methods(Static)
     function fig_out = figure(props_in_)
       fig_out = figure;
       for i=1:size(props_in_, 1)
@@ -20,7 +38,7 @@ classdef AYfig < handle
     function struct_out = specs_gen(name_in_, pos_in_)
       struct_out = {'Name', name_in_; 'Renderer', 'painters'; 'Position', pos_in_;};
     end
-    function fig_pos_out = fig_pos_gen(obj, rows_, cols_)
+    function fig_pos_out = fig_pos_gen(rows_, cols_)
       rows = rows_;
       if rows > 10;
         rows = 10;
