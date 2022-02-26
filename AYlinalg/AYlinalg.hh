@@ -15,11 +15,12 @@ class AYrng
         AYrng(uint64_t seed_, uint64_t jump_);
         ~AYrng();
 
-        uint64_t seed;
+        uint64_t seed=1.111e18;
         uint64_t jump=100;
         uint64_t carry;
 
-        virtual void rng_init(uint64_t seed_=8e15, uint64_t jump_=100);
+        void rng_true_init(uint64_t seed_=8.888e18, uint64_t jump_=100)
+        virtual void rng_init(uint64_t seed_=0);
         virtual double rand_gen();
 };
 
