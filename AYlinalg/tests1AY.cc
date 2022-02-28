@@ -279,6 +279,22 @@ void read_test()
 
 }
 
+void AYrng_test()
+{
+  int N = 10;
+  AYuniform uni1; AYnormal norm1;
+  AYuniform **unidp = new AYuniform*[N];
+
+  printf("uni1 seed, jump, carry: %e, %d, %e\n", uni1.dseed(), uni1.jump, uni1.dcarry());
+  printf("norm1 seed, jump, carry: %e, %d, %e\n", norm1.dseed(), norm1.jump, norm1.dcarry());
+
+  for (int i = 0; i < N; i++)
+  {
+    unidp[i] = new AYuniform(0.0, 1.0, i);
+    printf("unidp[%d] seed, jump, carry: %e, %d, %e\n", i, unidp[i]->dseed(), unidp[i]->jump, unidp[i]->dcarry());
+  }
+}
+
 int main()
 {
   // preliminary_test1();
@@ -290,20 +306,7 @@ int main()
   // sorting_test();
   // write_test();
   // read_test();
-
-  double v1[1], v2[1], v3[1], v4[1], v5[1], v6[1];
-  double alpha = 0.1;
-  int i = 0;
-
-  v1[i] = 1.0, v2[i] = 2.0, v3[i] = 3.0, v4[i] = 4.0, v5[i] = 5.0, v6[i] = 6.0;
-
-  printf("%f %f %f %f %f %f\n", v1[i], v2[i], v3[i], v4[i], v5[i], v6[i]);
-  double out = v3[i] = v4[i] = v5[i] = v6[i] -= alpha*v2[i];
-  printf("%f %f %f %f %f %f %f\n", out, v1[i], v2[i], v3[i], v4[i], v5[i], v6[i]);
-
-
-
-
+  AYrng_test();
 
   return 0;
 }
