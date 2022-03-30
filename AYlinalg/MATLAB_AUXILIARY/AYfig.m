@@ -7,6 +7,12 @@ classdef AYfig < handle
 
     %% movie stuff
     movie_gen;
+
+    %% tiled layout stuff
+    tile;
+    tile_dims;
+    tile_num;
+    ax_tile;
   end
   methods
     function obj = AYfig(props_in_)
@@ -21,12 +27,35 @@ classdef AYfig < handle
       str(Frames_) = struct('cdata', [], 'colormap', []);
       obj.movie_gen = str;
       obj.ax.NextPlot = 'replaceChildren';
+      axdims = get(obj.ax, 'Position');
+      axdims(3:4) = min(axdims(3:4));
+      set(obj.ax, 'Position', axdims);
       % obj.fig.Visible = 'off';
     end
-    function play_movie(obj)
-      obj.fig.Visible = 'on';
-      movie(obj.ax, obj.movie_gen);
+    function init_tiles(obj, tile_dims_)
+      clf(obj.fig);
+      obj.tile_dims = tile_dims_;
+      obj.tile_num = obj.tile_dims(1)*obj.tile_dims(2);
+      obj.tile = tiledlayout(obj.fig, obj.tile_dims(1), obj.tile_dims(2));
+      obj.tile.TileSpacing = 'compact';
+      obj.tile.Padding = 'compact';
+
+      obj.ax_tile = gobjects(obj.tile_num, 1);
+      for i=1:obj.tile_num
+        obj.ax_tile(i) = nexttile(obj.tile);
+      end
     end
+    function play_movie(obj, nplay_, fps_)
+      obj.fig.Visible = 'on';
+      movie(obj.ax, obj.movie_gen, nplay_, fps_);
+    end
+    function dims_out = get_dims(obj)
+      curunits = get(obj.ax, 'Units');
+      set(obj.ax, 'Units', 'Points');
+      dims_out = get(obj.ax, 'Position');
+      set(obj.ax, 'Units', curunits);
+    end
+
   end
   methods(Static)
     function fig_out = figure(props_in_)
@@ -69,6 +98,5 @@ classdef AYfig < handle
         end
       end
     end
-
   end
 end
