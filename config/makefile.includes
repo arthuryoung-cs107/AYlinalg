@@ -1,0 +1,25 @@
+CXX:=g++-11
+CC:=gcc-11
+OS:=OSX
+CFLAGS:= -O3 -fopenmp -DGSL -DKNUTH
+
+IBASIC:=-I/usr/local/include/
+LINK:=-L/usr/local/lib/
+LIBS:=-lm -lgsl -lgslcblas -lfftw3 -lblas
+
+# file names
+
+AYLINALG:= AYaux AYlinalg AYmat AYvec AYrng AYtens AYdecomps AYdata
+
+SOLVERS:= CGIHT
+
+# directories
+AY_SRC:= AYlinalg/linalg/
+AY_DIR:= AYlinalg/linalg_objs/
+SOL_SRC:= AYlinalg/solvers/
+SOL_DIR:= AYlinalg/solvers_objs/
+
+TEST_SRC:=tests/
+
+# final include directory, accounting for build structure
+IDIR:=$(IBASIC) -I$(AY_SRC) -I$(SOL_SRC)
