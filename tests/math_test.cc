@@ -285,8 +285,8 @@ void AYrng_test()
   AYuniform uni1; AYnormal norm1;
   AYuniform **unidp = new AYuniform*[N];
 
-  printf("uni1 seed, jump, carry: %e, %d, %e\n", uni1.dseed(), uni1.jump, uni1.dcarry());
-  printf("norm1 seed, jump, carry: %e, %d, %e\n", norm1.dseed(), norm1.jump, norm1.dcarry());
+  printf("uni1 seed, jump, carry: %e, %ld, %e\n", uni1.dseed(), uni1.jump, uni1.dcarry());
+  printf("norm1 seed, jump, carry: %e, %ld, %e\n", norm1.dseed(), norm1.jump, norm1.dcarry());
 
   for (int i = 0; i < N; i++)
   {
