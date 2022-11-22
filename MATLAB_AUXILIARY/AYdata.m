@@ -6,6 +6,23 @@ classdef AYdata < handle
         function obj = AYdata(len_)
             obj.len = len_;
         end
+        function struct_out = read_AYdata_struct(file_)
+            header_len=fread(file_, 1, 'int=>int');
+            header = fread(file_, header_len, 'int=>int');
+            struct_out = struct('hlen', header_len, ...
+                                'header', header, ...
+                                'ilen', header(1), ...
+                                'dlen', header(2), ...
+                                'ints', fread(file_,header(1),'int=>int'), ...
+                                'dubs', fread(file_,header(2),'double=>double'));
+
+            if (header_len>=3)
+                struct_out.ichunk = fread(file_,header(3),'int=>int');
+                if (header_len>=4)
+                    struct_out.dchunk = fread(file_,header(4),'double=>double');
+                end
+            end
+        end
         function dat_return = aysml_read(name)
             dims = dlmread([name, '.aysml']);
             if (size(dims, 1) == 1)

@@ -4,6 +4,7 @@ classdef AYfig < handle
         ax;
         props_in;
 
+        ax_generated;
 
         %% movie stuff
         movie_gen;
@@ -20,8 +21,10 @@ classdef AYfig < handle
         function obj = AYfig(props_in_, make_ax_)
             if (nargin==1)
                 make_ax=true;
+                obj.ax_generated=true;
             else
                 make_ax=make_ax_;
+                obj.ax_generated=make_ax;
             end
             obj.fig = figure;
             if (make_ax)
@@ -33,6 +36,10 @@ classdef AYfig < handle
             end
         end
         function init_movie(obj, Frames_, watch_tag)
+            if (~obj.ax_generated)
+                figure(obj.fig.Number);
+                obj.ax = gca;
+            end
             str(Frames_) = struct('cdata', [], 'colormap', []);
             obj.movie_gen = str;
             obj.ax.NextPlot = 'replaceChildren';
@@ -160,6 +167,8 @@ classdef AYfig < handle
             end
             if (strcmp(save_type, 'pdf'))
                 exportgraphics(fig_in, [save_dir fig_in.Name '.pdf'], 'ContentType', 'vector')
+            elseif (strcmp(save_type, 'png'))
+                exportgraphics(fig_in, [save_dir fig_in.Name '.png'])
             else
                 saveas(fig_it, [save_dir fig_it.Name], save_type);
             end
@@ -174,6 +183,11 @@ classdef AYfig < handle
                 for i=reshape(figs_to_write, 1, [])
                     fig_it = figs(i);
                     exportgraphics(fig_it, [save_dir fig_it.Name '.pdf'], 'ContentType', 'vector');
+                end
+            elseif (strcmp(save_type, 'png'))
+                for i=reshape(figs_to_write, 1, [])
+                    fig_it = figs(i);
+                    exportgraphics(fig_it, [save_dir fig_it.Name '.png']);
                 end
             else
                 for i=reshape(figs_to_write, 1, [])
